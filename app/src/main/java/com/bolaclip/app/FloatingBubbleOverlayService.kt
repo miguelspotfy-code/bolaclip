@@ -369,8 +369,7 @@ class FloatingBubbleOverlayService : Service() {
             val addendumNote = etAddon.text.toString().trim()
 
             val emailBody = buildString {
-                append("Olá,
-
+                append("Olá,\n")
             append("Segue a entrega referente ao BolaClip ($modelLabel).\n")
             if (isAddendum && addendumNote.isNotEmpty()) {
                 append("Adendos incluídos:\n$addendumNote\n")
