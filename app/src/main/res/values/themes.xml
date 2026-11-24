@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.BolaClip" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#FF7EB6</item>
+        <item name="colorSecondary">#9EE2D8</item>
+        <item name="android:windowBackground">#FFF6FA</item>
+        <item name="android:statusBarColor">#FFD6E7</item>
+        <item name="android:navigationBarColor">#FFF6FA</item>
+    </style>
+</resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="310dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_pastel"
+    android:elevation="20dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🍬 ✨ 🧁 ✨ 🍓"
+        android:textSize="22sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="BolaClip • Créditos Oficiais"
+        android:textColor="#5C2644"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvCreatorSignature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Criador: Esteffeson Matheus Barquete
+Contato: barqueteesteffeson@gmail.com
+WhatsApp: 54 99329-1661"
+        android:textColor="#4A233A"
+        android:textSize="13sp" />
+
+    <Button
+        android:id="@+id/btnCloseCredits"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="14dp"
+        android:backgroundTint="#FF8EC2"
+        android:text="Fechar Créditos"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
+</LinearLayout>

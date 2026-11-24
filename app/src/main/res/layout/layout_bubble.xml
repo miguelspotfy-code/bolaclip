@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="64dp"
+    android:layout_height="64dp"
+    android:background="@drawable/bg_bubble_pastel"
+    android:elevation="12dp">
+
+    <TextView
+        android:id="@+id/tvBubbleLabel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:maxLines="1"
+        android:padding="4dp"
+        android:text="CLIP"
+        android:textColor="#4A233A"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+
+</FrameLayout>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="320dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_dialog_pastel"
+    android:elevation="16dp"
+    android:orientation="vertical"
+    android:padding="18dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🍰 BolaClip • Nota Flutuante"
+            android:textColor="#5C2644"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnCloseDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:backgroundTint="#FFD1E6"
+            android:text="Fechar"
+            android:textColor="#5C2644"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Nome da bolinha (máx. 4 caracteres):"
+        android:textColor="#6E3B57"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/etBubbleShortName"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginTop="4dp"
+        android:background="#FFFFFF"
+        android:hint="Ex: PIX, OBS, OK"
+        android:inputType="textCapCharacters"
+        android:maxLength="4"
+        android:paddingHorizontal="12dp"
+        android:textColor="#3A182B"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Texto rápido (1 clique copia):"
+        android:textColor="#6E3B57"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/etBubbleContent"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginTop="4dp"
+        android:background="#FFFFFF"
+        android:gravity="top|start"
+        android:hint="Digite ou cole o texto da bolinha..."
+        android:inputType="textMultiLine"
+        android:padding="12dp"
+        android:textColor="#3A182B"
+        android:textSize="14sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnSaveBubble"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="#FF8EC2"
+            android:text="Salvar"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnCopyBubble"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="#8AD8C8"
+            android:text="Copiar"
+            android:textColor="#1F473F"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnDeleteBubble"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_marginEnd="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="#FFE3EC"
+            android:text="Excluir"
+            android:textColor="#8A2446"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnOpenCredits"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="6dp"
+            android:layout_weight="1"
+            android:backgroundTint="#FFF0C2"
+            android:text="Créditos"
+            android:textColor="#5E4606"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+</LinearLayout>

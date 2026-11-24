@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="340dp"
+    android:layout_height="520dp"
+    android:background="@drawable/bg_dialog_pastel"
+    android:elevation="20dp"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔐 Painel Therion@22 • BolaClip"
+            android:textColor="#5C2644"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Supabase URL:"
+            android:textColor="#6E3B57"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etSupabaseUrl"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#FFFFFF"
+            android:hint="COLOQUE_SUA_CHAVE_AQUI (Supabase URL)"
+            android:paddingHorizontal="10dp"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Supabase Publishable Key:"
+            android:textColor="#6E3B57"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etSupabaseKey"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#FFFFFF"
+            android:hint="COLOQUE_SUA_CHAVE_AQUI (Supabase Key)"
+            android:paddingHorizontal="10dp"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="GitHub Token / Adendo:"
+            android:textColor="#6E3B57"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etGithubToken"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#FFFFFF"
+            android:hint="COLOQUE_SUA_CHAVE_AQUI (GitHub Token)"
+            android:paddingHorizontal="10dp"
+            android:textSize="12sp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Enviar por e-mail:"
+            android:textColor="#5C2644"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <RadioGroup
+            android:id="@+id/rgCodeExportMode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/rbOriginalCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Código Original"
+                android:textColor="#3A182B"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/rbAddendumCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Código com Adendos"
+                android:textColor="#3A182B"
+                android:textSize="12sp" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/etRecipientEmail"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="6dp"
+            android:background="#FFFFFF"
+            android:hint="E-mail do comprador (ex: comprador@empresa.com)"
+            android:inputType="textEmailAddress"
+            android:paddingHorizontal="10dp"
+            android:textSize="12sp" />
+
+        <EditText
+            android:id="@+id/etAddonPayload"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginTop="8dp"
+            android:background="#FFFFFF"
+            android:gravity="top|start"
+            android:hint="Adendos / notas para incluir no envio..."
+            android:padding="10dp"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btnSendCodeEmail"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#FF7EB6"
+            android:text="Enviar Código Selecionado por E-mail"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnSaveDevConfig"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="#FF8EC2"
+            android:text="Salvar Chaves e Sincronizar"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnTestAddon"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="6dp"
+            android:backgroundTint="#8AD8C8"
+            android:text="Clonar / Testar Adendo"
+            android:textColor="#1F473F"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnDeployUpdate"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="6dp"
+            android:backgroundTint="#FFD670"
+            android:text="Implantar Atualização"
+            android:textColor="#4D3700"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnCloseDevPanel"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_marginTop="6dp"
+            android:backgroundTint="#FCE4EC"
+            android:text="Fechar Painel"
+            android:textColor="#6E3B57" />
+    </LinearLayout>
+</ScrollView>
