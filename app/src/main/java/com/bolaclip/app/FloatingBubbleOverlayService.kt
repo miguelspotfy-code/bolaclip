@@ -371,23 +371,14 @@ class FloatingBubbleOverlayService : Service() {
             val emailBody = buildString {
                 append("Olá,
 
-")
-                append("Segue a entrega referente ao BolaClip ($modeLabel).
-")
-                if (isAddendum && addendumNote.isNotEmpty()) {
-                    append("
-Adendos incluídos:
-$addendumNote
-")
-                }
-                append("
-Criador: ${AppConfig.CREATOR_NAME}
-")
-                append("WhatsApp: ${AppConfig.CREATOR_WHATSAPP}
-")
-                append("E-mail: ${AppConfig.CREATOR_EMAIL}
-")
+            append("Segue a entrega referente ao BolaClip ($modelLabel).\n")
+            if (isAddendum && addendumNote.isNotEmpty()) {
+                append("Adendos incluídos:\n$addendumNote\n")
             }
+            append("Criador: Esteffeson Matheus Barquete\n")
+            append("WhatsApp: 54993291661\n")
+            append("E-mail: barqueteesteffeson@gmail.com\n")
+        }
 
             val emailIntent = Intent(Intent.ACTION_SEND).apply {
                 type = "message/rfc822"
