@@ -246,7 +246,7 @@
       cursor: pointer;
     }
 
-    /* Bola Matriz fixa em 32px */
+    /* Bola Matriz fixa em 32px — inicia estritamente oculta até clicar em Iniciar */
     #matrixBall {
       position: fixed;
       right: 18px;
@@ -297,7 +297,6 @@
       overflow: hidden;
     }
 
-    /* Gaveta Lateral e Modais */
     .overlay-backdrop {
       position: fixed;
       inset: 0;
@@ -479,8 +478,8 @@
     </section>
   </main>
 
-  <!-- Bola Matriz fixa em 32px -->
-  <div id="matrixBall" class="hidden" title="Bola Matriz">+</div>
+  <!-- Bola Matriz fixa em 32px — oculta até tocar em Iniciar -->
+  <div id="matrixBall" class="hidden" style="display:none;" title="Bola Matriz">+</div>
 
   <!-- Gaveta Lateral do Menu -->
   <div id="drawerBackdrop" class="overlay-backdrop hidden"></div>
@@ -490,7 +489,6 @@
       <button id="btnCloseDrawer" class="secondary-btn" type="button">✕ Fechar</button>
     </div>
 
-    <!-- Acesso e Resgate por Senha Única no GitHub -->
     <div class="section-box gold-border">
       <div class="section-title">🔐 Senha Única (Sem Login) • GitHub</div>
       <input id="vaultPasswordInput" type="password" placeholder="Digite sua senha única..." autocomplete="off" />
@@ -501,7 +499,6 @@
       <div id="vaultStatusText" style="font-size:11px;color:var(--ink-soft);"></div>
     </div>
 
-    <!-- Trocar Senha Única (sempre visível no Menu) -->
     <div class="section-box gold-border">
       <div class="section-title">🔑 Trocar Senha Única</div>
       <input id="currentPasswordInput" type="password" placeholder="Senha única atual..." autocomplete="off" />
@@ -509,7 +506,6 @@
       <button id="btnChangePassword" class="action-btn" type="button">💾 Atualizar Senha Única</button>
     </div>
 
-    <!-- Bolinhas Salvas -->
     <div class="section-box gold-border">
       <div class="section-title">🫧 Bolinhas Salvas (até 30)</div>
       <div id="savedVaultList" style="display:flex;flex-direction:column;gap:8px;">
@@ -549,7 +545,7 @@
     </div>
   </div>
 
-  <!-- Modal Criar Bolinha (ao clicar na Bola Matriz) -->
+  <!-- Modal Criar Bolinha -->
   <div id="createBubbleModal" class="overlay-backdrop hidden">
     <div class="modal-box gold-border">
       <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -564,7 +560,7 @@
     </div>
   </div>
 
-  <!-- Modal Editar Bolinha (2 cliques) -->
+  <!-- Modal Editar Bolinha -->
   <div id="editBubbleModal" class="overlay-backdrop hidden">
     <div class="modal-box gold-border">
       <div style="display:flex;justify-content:space-between;align-items:center;">
@@ -590,7 +586,6 @@
         <button id="btnCloseSecretPanel" class="secondary-btn" type="button">✕</button>
       </div>
 
-      <!-- Chaves e APIs/IPI trocáveis -->
       <div class="section-box gold-border">
         <div class="section-title">🔌 Chaves, GitHub & APIs / IPI</div>
         <input id="cfgGhOwnerRepo" type="text" placeholder="Repositório GitHub (ex: miguelspotfy-code/bolaclip)" />
@@ -603,7 +598,6 @@
         <button id="btnSaveConfigKeys" class="action-btn" type="button">💾 Salvar Chaves & Configurações</button>
       </div>
 
-      <!-- Atualização OTA GitHub -->
       <div class="section-box gold-border">
         <div class="section-title">📡 Atualização & Sincronização GitHub</div>
         <div class="btn-row">
@@ -613,7 +607,6 @@
         <div id="otaStatusBox" style="font-size:11px;color:var(--ink-soft);"></div>
       </div>
 
-      <!-- Laboratório de Adendos (Clone -> Testar -> Aprovar Globalmente) -->
       <div class="section-box gold-border">
         <div class="section-title">🧪 Adendos (Clone Sandbox & Aprovação)</div>
         <input id="addonTitleInput" type="text" placeholder="Nome do adendo..." />
@@ -626,7 +619,6 @@
         <div id="addonsListBox" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
 
-      <!-- Exportação de Código e E-mail -->
       <div class="section-box gold-border">
         <div class="section-title">📦 Código Completo & Envio por E-mail</div>
         <div class="btn-row">
@@ -712,7 +704,6 @@
         } catch (e) {}
       }
 
-      /* Chuva contínua de bolinhas e pirulitos */
       function initCandyRain() {
         const layer = document.getElementById('candy-rain-layer');
         layer.innerHTML = '';
@@ -750,12 +741,22 @@
         }
       }
 
-      /* Bola Matriz (32px) com arraste e toque confiável */
       const matrixBall = document.getElementById('matrixBall');
+
+      function enforceMatrixHiddenOnStart() {
+        matrixActive = false;
+        matrixBall.classList.add('hidden');
+        matrixBall.style.display = 'none';
+        notifyNativeOverlay('hideOverlay', { active: false });
+        notifyNativeOverlay('setMatrixActive', { active: false });
+      }
 
       function activateMatrixBall() {
         matrixActive = true;
         matrixBall.classList.remove('hidden');
+        matrixBall.style.display = 'flex';
+        notifyNativeOverlay('showOverlay', { active: true });
+        notifyNativeOverlay('setMatrixActive', { active: true });
         notifyNativeOverlay('matrixActivated', { active: true });
         showToast('Bola Matriz (+) ativada!');
       }
@@ -823,7 +824,6 @@
       }, { passive: true });
       window.addEventListener('touchend', endMatrixDrag);
 
-      /* Criação, gestos (1, 2, 3 cliques) e arrastar até a Bola Matriz para salvar */
       function spawnClipBubble(name, text) {
         const trimmedName = (name || '').trim();
         const trimmedText = (text || '').trim();
@@ -1023,7 +1023,6 @@
         document.getElementById('editBubbleModal').classList.add('hidden');
       });
 
-      /* Cofre por Senha Única & API REST do GitHub */
       function saveBubbleToVault(bubble) {
         const existingIdx = vaultItems.findIndex((v) => v.name === bubble.name && v.text === bubble.text);
         if (existingIdx >= 0) {
@@ -1209,7 +1208,6 @@
         showToast('🔑 Senha única atualizada!');
       });
 
-      /* Gaveta & Modais */
       const drawerBackdrop = document.getElementById('drawerBackdrop');
       const drawerPanel = document.getElementById('drawerPanel');
 
@@ -1241,7 +1239,6 @@
         document.getElementById('tipsModal').classList.add('hidden');
       });
 
-      /* Painel Secreto Master (Therion@02) */
       function openSecretPanel() {
         document.getElementById('cfgGhOwnerRepo').value = config.ghRepo || '';
         document.getElementById('cfgGhBranch').value = config.ghBranch || 'main';
@@ -1295,7 +1292,6 @@
 
       document.getElementById('btnPushVaultNow').addEventListener('click', pushVaultToGitHub);
 
-      /* Adendos: Clone -> Teste -> Aprovar em Todos os Apps */
       document.getElementById('btnCreateCloneTest').addEventListener('click', () => {
         const title = document.getElementById('addonTitleInput').value.trim();
         const code = document.getElementById('addonCodeInput').value;
@@ -1435,10 +1431,11 @@
         }[m]));
       }
 
+      enforceMatrixHiddenOnStart();
       initCandyRain();
       renderVaultList();
       renderAddonsList();
-      notifyNativeOverlay('ready', { app: 'BolaClip', author: config.author });
+      notifyNativeOverlay('ready', { app: 'BolaClip', author: config.author, matrixActive: false });
     })();
   </script>
 </body>
