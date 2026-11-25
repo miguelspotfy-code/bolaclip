@@ -68,7 +68,7 @@ public class OverlayService extends Service {
 
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("BolaClip")
-                .setContentText("Bolinhas ativas sobre a tela")
+                .setContentText("Bolinha matriz ativa sobre a tela")
                 .setSmallIcon(R.drawable.ic_bolaclip_launcher)
                 .setOngoing(true)
                 .build();
@@ -89,16 +89,16 @@ public class OverlayService extends Service {
         TextView plusBubble = new TextView(this);
         plusBubble.setText("+");
         plusBubble.setTextColor(Color.parseColor("#4A3F35"));
-        plusBubble.setTextSize(26f);
+        plusBubble.setTextSize(24f);
         plusBubble.setGravity(Gravity.CENTER);
 
         GradientDrawable bubbleBg = new GradientDrawable();
         bubbleBg.setShape(GradientDrawable.OVAL);
         bubbleBg.setColor(Color.parseColor("#FFD1DC"));
-        bubbleBg.setStroke(4, Color.parseColor("#F4A7B9"));
+        bubbleBg.setStroke(3, Color.parseColor("#F4A7B9"));
         plusBubble.setBackground(bubbleBg);
 
-        int sizePx = dp(58);
+        int sizePx = dp(52);
         matrixParams = new WindowManager.LayoutParams(
                 sizePx,
                 sizePx,
@@ -108,8 +108,8 @@ public class OverlayService extends Service {
                 PixelFormat.TRANSLUCENT
         );
         matrixParams.gravity = Gravity.TOP | Gravity.START;
-        matrixParams.x = dp(24);
-        matrixParams.y = dp(180);
+        matrixParams.x = dp(18);
+        matrixParams.y = dp(420);
 
         final int touchSlop = ViewConfiguration.get(this).getScaledTouchSlop();
         plusBubble.setOnTouchListener(new View.OnTouchListener() {
@@ -169,7 +169,7 @@ public class OverlayService extends Service {
         TextView bubble = new TextView(this);
         bubble.setText(String.valueOf(idx));
         bubble.setTextColor(Color.parseColor("#4A3F35"));
-        bubble.setTextSize(18f);
+        bubble.setTextSize(17f);
         bubble.setGravity(Gravity.CENTER);
 
         GradientDrawable bg = new GradientDrawable();
@@ -178,7 +178,7 @@ public class OverlayService extends Service {
         bg.setStroke(3, Color.parseColor(borderColors[colorIndex]));
         bubble.setBackground(bg);
 
-        int sizePx = dp(52);
+        int sizePx = dp(48);
         final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 sizePx,
                 sizePx,
@@ -187,8 +187,8 @@ public class OverlayService extends Service {
                 PixelFormat.TRANSLUCENT
         );
         params.gravity = Gravity.TOP | Gravity.START;
-        params.x = dp(96) + ((idx * 24) % dp(140));
-        params.y = dp(180) + ((idx * 32) % dp(220));
+        params.x = dp(84) + ((idx * 18) % dp(120));
+        params.y = dp(380) + ((idx * 20) % dp(140));
 
         final int touchSlop = ViewConfiguration.get(this).getScaledTouchSlop();
         bubble.setOnTouchListener(new View.OnTouchListener() {
