@@ -1,76 +1,45 @@
 package com.bolaclip.app
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var webView: WebView
+    private var pendingAction: String? = null
+
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val root = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(48, 64, 48, 48)
-            setBackgroundColor(0xFFFFF6FA.toInt())
+        stopOverlayService()
+
+        webView = WebView(this).apply {
+            settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
+            settings.allowFileAccess = true
+            settings.allowContentAccess = true
+            settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            webViewClient = WebViewClient()
+            webChromeClient = WebChromeClient()
+            addJavascriptInterface(NativeOverlayBridge(), "AndroidOverlay")
+            addJavascriptInterface(NativeOverlayBridge(), "AndroidBridge")
         }
 
-        val title = TextView(this).apply {
-            text = "🍬 BolaClip"
-            textSize = 26f
-            setTextColor(0xFF5C2644.toInt())
-        }
-
-        val subtitle = TextView(this).apply {
-            text = "Bolinhas flutuantes sobre outros apps (até 30 salvas)\n1 clique copia • 2 cliques edita • 3 cliques salva\nCriador: ${AppConfig.CREATOR_NAME}"
-            textSize = 14f
-            setTextColor(0xFF6E3B57.toInt())
-            setPadding(0, 16, 0, 32)
-        }
-
-        val btnPermission = Button(this).apply {
-            text = "1. Permitir 'Aparecer sobre outros apps'"
-            setBackgroundColor(0xFFFF9EC7.toInt())
-            setTextColor(0xFFFFFFFF.toInt())
-            setOnClickListener { requestOverlayPermission() }
-        }
-
-        val btnStartBubbles = Button(this).apply {
-            text = "2. Ativar Bolinhas Flutuantes"
-            setBackgroundColor(0xFF8AD8C8.toInt())
-            setTextColor(0xFF1F473F.toInt())
-            setOnClickListener { startOverlayAction(FloatingBubbleOverlayService.ACTION_SHOW_BUBBLES) }
-        }
-
-        val btnAddBubble = Button(this).apply {
-            text = "3. Nova Bolinha (máx. 30)"
-            setBackgroundColor(0xFFFFD670.toInt())
-            setTextColor(0xFF4D3700.toInt())
-            setOnClickListener { startOverlayAction(FloatingBubbleOverlayService.ACTION_ADD_BUBBLE) }
-        }
-
-        val btnHideBubbles = Button(this).apply {
-            text = "Ocultar Bolinhas"
-            setBackgroundColor(0xFFFFE3EC.toInt())
-            setTextColor(0xFF8A2446.toInt())
-            setOnClickListener { startOverlayAction(FloatingBubbleOverlayService.ACTION_HIDE_ALL) }
-        }
-
-        root.addView(title)
-        root.addView(subtitle)
-        root.addView(btnPermission)
-        root.addView(btnStartBubbles)
-        root.addView(btnAddBubble)
-        root.addView(btnHideBubbles)
-        setContentView(root)
+        setContentView(webView)
+        webView.loadUrl("file:///android_asset/bolaclip.html")
     }
 
     private fun requestOverlayPermission() {
@@ -80,13 +49,12 @@ class MainActivity : AppCompatActivity() {
                 Uri.parse("package:$packageName")
             )
             startActivity(intent)
-        } else {
-            Toast.makeText(this, "Permissão de sobreposição já ativa!", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun startOverlayAction(action: String) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            pendingAction = action
             Toast.makeText(this, "Primeiro permita 'Aparecer sobre outros apps'.", Toast.LENGTH_SHORT).show()
             requestOverlayPermission()
             return
@@ -95,5 +63,69 @@ class MainActivity : AppCompatActivity() {
             this.action = action
         }
         ContextCompat.startForegroundService(this, intent)
+    }
+
+    private fun stopOverlayService() {
+        try {
+            stopService(Intent(this, FloatingBubbleOverlayService::class.java))
+        } catch (_: Exception) {
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val act = pendingAction
+        if (act != null && (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || Settings.canDrawOverlays(this))) {
+            pendingAction = null
+            startOverlayAction(act)
+        }
+    }
+
+    override fun onDestroy() {
+        webView.destroy()
+        super.onDestroy()
+    }
+
+    inner class NativeOverlayBridge {
+        @JavascriptInterface
+        fun startOverlay(jsonPayload: String? = null) {
+            runOnUiThread {
+                startOverlayAction(FloatingBubbleOverlayService.ACTION_SHOW_BUBBLES)
+            }
+        }
+
+        @JavascriptInterface
+        fun showOverlay(jsonPayload: String? = null) {
+            runOnUiThread {
+                startOverlayAction(FloatingBubbleOverlayService.ACTION_SHOW_BUBBLES)
+            }
+        }
+
+        @JavascriptInterface
+        fun hideOverlay(jsonPayload: String? = null) {
+            runOnUiThread {
+                stopOverlayService()
+            }
+        }
+
+        @JavascriptInterface
+        fun stopOverlay(jsonPayload: String? = null) {
+            runOnUiThread {
+                stopOverlayService()
+            }
+        }
+
+        @JavascriptInterface
+        fun postMessage(rawJson: String?) {
+            if (rawJson.isNullOrBlank()) return
+            runOnUiThread {
+                when {
+                    rawJson.contains("startOverlay") || rawJson.contains("showOverlay") ->
+                        startOverlayAction(FloatingBubbleOverlayService.ACTION_SHOW_BUBBLES)
+                    rawJson.contains("hideOverlay") || rawJson.contains("stopOverlay") ->
+                        stopOverlayService()
+                }
+            }
+        }
     }
 }
