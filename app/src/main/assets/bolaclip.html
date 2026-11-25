@@ -130,6 +130,21 @@ h1, h2, h3, .brand-font {
   z-index: 55;
   touch-action: none;
 }
+/* Correcao de layout para WebView */
+*, *::before, *::after { box-sizing: border-box; max-width: 100%; }
+body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
+.app-shell { width: 100%; max-width: 480px; margin: 0 auto; padding: 14px; }
+.grid { display: grid; }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.gap-2\.5, .gap-2 { gap: 10px; }
+.p-3 { padding: 12px; }
+.p-5 { padding: 18px; }
+.mt-0\.5 { margin-top: 2px; }
+.mt-4 { margin-top: 16px; }
+.space-y-3 > * + * { margin-top: 12px; }
+.rounded-2xl { border-radius: 16px; }
+.text-center { text-align: center; }
+button, input { max-width: 100%; }
 </style>
 </head>
 <body>
