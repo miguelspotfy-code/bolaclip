@@ -82,9 +82,9 @@ class FloatingBubbleOverlayService : Service() {
         when (intent?.action) {
             ACTION_ADD_BUBBLE -> createNewBubble()
             ACTION_HIDE_ALL -> removeAllOverlays()
-            ACTION_SHOW_BUBBLES, null -> renderAllBubbles()
+            ACTION_SHOW_BUBBLES -> { if (intent?.getBooleanExtra("from_start_button", false) == true) renderAllBubbles() }
         }
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
