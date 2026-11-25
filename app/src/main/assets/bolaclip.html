@@ -1,848 +1,1445 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>BolaClip - Atalhos Flutuantes Inteligentes</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --candy-pink: #ff6b9d;
-  --candy-purple: #8b5cf6;
-  --candy-mint: #10b981;
-  --candy-cream: rgba(255, 255, 255, 0.94);
-  --candy-border: rgba(255, 182, 208, 0.65);
-  --text-main: #2d1b36;
-}
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: 'Inter', sans-serif;
-  color: var(--text-main);
-  background: linear-gradient(155deg, #ffe6f0 0%, #ede4ff 48%, #dff4ff 100%);
-  user-select: none;
-  overflow-x: hidden;
-}
-h1, h2, h3, .brand-font {
-  font-family: 'Quicksand', sans-serif;
-}
-.candy-wallpaper {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 15% 15%, rgba(255, 182, 208, 0.45) 0%, transparent 45%),
-    radial-gradient(circle at 85% 20%, rgba(196, 181, 253, 0.45) 0%, transparent 45%),
-    radial-gradient(circle at 50% 85%, rgba(167, 243, 208, 0.45) 0%, transparent 50%),
-    linear-gradient(160deg, #fff6f9 0%, #f5f0ff 50%, #eefaff 100%);
-}
-.sprinkle {
-  position: absolute;
-  border-radius: 9999px;
-  pointer-events: none;
-  opacity: 0.5;
-  will-change: transform;
-  animation: fallSprinkle linear infinite;
-}
-@keyframes fallSprinkle {
-  0% { transform: translate3d(0, -10vh, 0); }
-  100% { transform: translate3d(0, 110vh, 0); }
-}
-.app-shell {
-  position: relative;
-  z-index: 1;
-  min-height: 100vh;
-  padding: 16px;
-}
-.candy-card {
-  background: var(--candy-cream);
-  border: 1.5px solid var(--candy-border);
-  border-radius: 24px;
-  box-shadow: 0 10px 28px rgba(139, 92, 246, 0.1);
-}
-.start-bubble {
-  width: 148px;
-  height: 148px;
-  border-radius: 9999px;
-  background: radial-gradient(circle at 32% 28%, #6ee7b7 0%, #10b981 58%, #047857 100%);
-  box-shadow: 0 14px 30px rgba(16, 185, 129, 0.35), inset 0 6px 14px rgba(255, 255, 255, 0.55);
-  color: #fff;
-  font-weight: 800;
-  font-size: 1.35rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.15s ease;
-}
-.start-bubble:active {
-  transform: scale(0.95);
-}
-.floating-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  pointer-events: none;
-}
-.matrix-ball {
-  position: fixed;
-  top: 18px;
-  right: 18px;
-  width: 56px;
-  height: 56px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #10b981, #8b5cf6);
-  color: #fff;
-  font-size: 28px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 24px rgba(139, 92, 246, 0.35);
-  pointer-events: auto;
-  z-index: 60;
-}
-.clip-bubble {
-  position: fixed;
-  width: 54px;
-  height: 54px;
-  border-radius: 9999px;
-  background: linear-gradient(135deg, #ff6b9d, #a78bfa);
-  color: #fff;
-  font-weight: 700;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 4px;
-  box-shadow: 0 8px 20px rgba(255, 107, 157, 0.35);
-  pointer-events: auto;
-  z-index: 55;
-  touch-action: none;
-}
-/* Correcao de layout e componentes para WebView */
-.hidden { display: none !important; }
-.w-full { width: 100%; display: block; }
-.py-2\.5 { padding-top: 10px; padding-bottom: 10px; }
-.py-3 { padding-top: 12px; padding-bottom: 12px; }
-.px-4 { padding-left: 16px; padding-right: 16px; }
-.pt-1 { padding-top: 4px; }
-.space-y-2 > * + * { margin-top: 8px; }
-.rounded-xl { border-radius: 12px; }
-.font-bold { font-weight: 700; }
-.text-sm { font-size: 14px; }
-.text-white { color: #ffffff; }
-.bg-emerald-500 { background-color: #10b981; border: none; cursor: pointer; }
-.bg-pink-500 { background-color: #ec4899; border: none; cursor: pointer; }
-.bg-amber-300 { background-color: #fcd34d; border: none; cursor: pointer; }
-.text-amber-950 { color: #451a03; }
-.bg-white { background-color: #ffffff; }
-.border-pink-200 { border: 1.5px solid #fbcfe8; }
-*, *::before, *::after { box-sizing: border-box; max-width: 100%; }
-body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
-.app-shell { width: 100%; max-width: 480px; margin: 0 auto; padding: 14px; }
-.grid { display: grid; }
-.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.gap-2\.5, .gap-2 { gap: 10px; }
-.p-3 { padding: 12px; }
-.p-5 { padding: 18px; }
-.mt-0\.5 { margin-top: 2px; }
-.mt-4 { margin-top: 16px; }
-.space-y-3 > * + * { margin-top: 12px; }
-.rounded-2xl { border-radius: 16px; }
-.text-center { text-align: center; }
-button, input { max-width: 100%; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>BolaClip — Bancada Doce de Atalhos Rápidos</title>
+  <style>
+    :root {
+      --gold: #d4af37;
+      --gold-bright: #f7e08a;
+      --gold-deep: #9e7716;
+      --rose-light: #fff3f8;
+      --rose-mid: #ffe2ee;
+      --lilac-soft: #f5eeff;
+      --mint-soft: #e9fbf4;
+      --ink: #3a1d39;
+      --ink-soft: #6f476d;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100dvh;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      color: var(--ink);
+      background-color: #ffdce9;
+      background-image:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.72) 0, rgba(255, 255, 255, 0) 24%),
+        radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.65) 0, rgba(255, 255, 255, 0) 26%),
+        radial-gradient(circle at 35% 80%, rgba(255, 255, 255, 0.65) 0, rgba(255, 255, 255, 0) 28%),
+        repeating-radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.24) 0 8px, rgba(255, 194, 219, 0.22) 8px 16px, rgba(255, 255, 255, 0.32) 16px 24px),
+        linear-gradient(155deg, #ffe8f1 0%, #f7e8ff 52%, #fff0f6 100%);
+      background-attachment: fixed;
+      overflow-x: hidden;
+      user-select: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .gold-border {
+      border: 2px solid var(--gold) !important;
+      box-shadow: 0 6px 18px rgba(158, 119, 22, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    }
+
+    #candy-rain-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    .rain-item {
+      position: absolute;
+      top: -80px;
+      will-change: transform;
+      animation: candyFall linear infinite;
+    }
+
+    .rain-orb {
+      border-radius: 9999px;
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 0.85), 0 3px 8px rgba(212, 175, 55, 0.15);
+    }
+
+    @keyframes candyFall {
+      0% {
+        transform: translate3d(0, -80px, 0) rotate(0deg);
+      }
+      50% {
+        transform: translate3d(14px, 52vh, 0) rotate(180deg);
+      }
+      100% {
+        transform: translate3d(-10px, 110vh, 0) rotate(360deg);
+      }
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 5;
+      max-width: 460px;
+      margin: 0 auto;
+      padding: 14px 14px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .menu-btn {
+      background: linear-gradient(145deg, #ffffff, #fff0f6);
+      color: var(--ink);
+      border-radius: 18px;
+      padding: 9px 14px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .brand-colorful {
+      display: inline-flex;
+      align-items: center;
+      gap: 1px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #fffdfd, #fff4fa);
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: 0.3px;
+    }
+    .brand-colorful span:nth-child(1) { color: #ff2e7e; }
+    .brand-colorful span:nth-child(2) { color: #ff7a00; }
+    .brand-colorful span:nth-child(3) { color: #e0a800; }
+    .brand-colorful span:nth-child(4) { color: #16a34a; }
+    .brand-colorful span:nth-child(5) { color: #0284c7; }
+    .brand-colorful span:nth-child(6) { color: #7c3aed; }
+    .brand-colorful span:nth-child(7) { color: #db2777; }
+    .brand-colorful span:nth-child(8) { color: #ea580c; }
+
+    .gold-signature-btn {
+      background: linear-gradient(135deg, #fff3bd 0%, #e6be4a 48%, #b8891d 100%);
+      color: #3b2300;
+      border: 2px solid #fff8d6 !important;
+      outline: 2px solid var(--gold);
+      border-radius: 9999px;
+      padding: 8px 13px;
+      font-weight: 900;
+      font-size: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(158, 119, 22, 0.35);
+    }
+
+    .hero-card {
+      background: rgba(255, 250, 253, 0.92);
+      border-radius: 28px;
+      padding: 20px 16px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .start-bubble {
+      width: 118px;
+      height: 118px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 32% 28%, #9ef7c7 0%, #27c47a 55%, #118c52 100%);
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 20px;
+      border: 3px solid var(--gold) !important;
+      box-shadow: 0 10px 24px rgba(23, 156, 94, 0.35), inset 0 4px 10px rgba(255, 255, 255, 0.65);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pill-hint {
+      background: #fff7fb;
+      color: var(--ink);
+      border-radius: 9999px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .bench-card {
+      background: rgba(255, 250, 253, 0.94);
+      border-radius: 26px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bench-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--ink);
+    }
+
+    .bench-sub {
+      margin: 0;
+      font-size: 13px;
+      color: var(--ink-soft);
+      line-height: 1.4;
+    }
+
+    .gestures-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .gesture-box {
+      background: linear-gradient(150deg, #ffffff, #fff2f8);
+      border-radius: 18px;
+      padding: 11px;
+    }
+
+    .gesture-title {
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    .gesture-desc {
+      font-size: 12px;
+      color: var(--ink-soft);
+      line-height: 1.35;
+    }
+
+    .tips-bar {
+      background: rgba(255, 250, 253, 0.94);
+      border-radius: 22px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .btn-pink {
+      background: linear-gradient(135deg, #ff7eb6, #ff4794);
+      color: #ffffff;
+      border-radius: 9999px;
+      padding: 8px 14px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* Bola Matriz fixa em 32px */
+    #matrixBall {
+      position: fixed;
+      right: 18px;
+      bottom: 84px;
+      width: 32px;
+      height: 32px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 30% 30%, #ffd1e6, #ff4d94 68%, #c91862 100%);
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 18px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2147483642;
+      cursor: pointer;
+      border: 2px solid var(--gold);
+      box-shadow: 0 6px 16px rgba(201, 24, 98, 0.35);
+      touch-action: none;
+    }
+
+    #matrixBall.magnet-active {
+      transform: scale(1.22);
+      box-shadow: 0 0 0 5px rgba(212, 175, 55, 0.45), 0 8px 20px rgba(255, 77, 148, 0.55);
+    }
+
+    /* Bolinhas de clip em 42px (+40% sobre 30px) */
+    .clip-bubble {
+      position: fixed;
+      width: 42px;
+      height: 42px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 30% 28%, #ffffff 0%, #ffd6ea 48%, #f472b6 100%);
+      color: #4a1535;
+      font-weight: 900;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2147483640;
+      cursor: pointer;
+      border: 2px solid var(--gold);
+      box-shadow: 0 6px 14px rgba(158, 119, 22, 0.25);
+      touch-action: none;
+      padding: 2px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    /* Gaveta Lateral e Modais */
+    .overlay-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 224, 238, 0.72);
+      backdrop-filter: blur(4px);
+      z-index: 2147483645;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+
+    .drawer-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: min(92vw, 370px);
+      background: linear-gradient(170deg, #fff7fb 0%, #f8eeff 100%);
+      z-index: 2147483646;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 430px;
+      max-height: 86dvh;
+      overflow-y: auto;
+      background: linear-gradient(165deg, #fff9fc 0%, #f7efff 100%);
+      border-radius: 24px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 2147483647;
+    }
+
+    .section-box {
+      background: rgba(255, 255, 255, 0.88);
+      border-radius: 18px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-title {
+      font-weight: 900;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    input, textarea, select {
+      width: 100%;
+      background: #ffffff;
+      color: var(--ink);
+      border: 1.5px solid var(--gold);
+      border-radius: 12px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 76px;
+      resize: vertical;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .action-btn {
+      background: linear-gradient(135deg, #fff5c4, #e7c04d);
+      color: #3a2200;
+      border: 1.5px solid var(--gold);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .secondary-btn {
+      background: #fff0f7;
+      color: var(--ink);
+      border: 1.5px solid var(--gold);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-weight: 800;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .vault-item, .addon-item {
+      background: #fffafd;
+      border: 1.5px solid var(--gold);
+      border-radius: 14px;
+      padding: 9px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .toast-banner {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #fff7d1, #ffe4f0);
+      color: var(--ink);
+      border: 2px solid var(--gold);
+      border-radius: 9999px;
+      padding: 9px 18px;
+      font-weight: 800;
+      font-size: 12px;
+      z-index: 2147483647;
+      box-shadow: 0 8px 20px rgba(158, 119, 22, 0.28);
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
-<div class="candy-wallpaper" id="wallpaper"></div>
+  <div id="candy-rain-layer" aria-hidden="true"></div>
 
-<!-- TELA 1: ENTRADA E LOGIN -->
-<div id="screenLock" class="app-shell max-w-md mx-auto space-y-4">
-  <div class="candy-card p-5">
-    <h1 class="text-2xl font-extrabold text-pink-600">BolaClip</h1>
-    <p class="text-xs text-purple-800 mt-1">Atalhos flutuantes para copiar PIX, textos, chaves e respostas em 1 clique.</p>
-    <div class="grid grid-cols-2 gap-2.5 mt-4 text-center">
-      <div class="bg-pink-50 border border-pink-200 rounded-2xl p-3">
-        <div class="text-xs font-bold text-pink-600">SEM BOLACLIP: 26%</div>
-        <div class="text-[11px] text-gray-600 mt-0.5">15s por troca de tela</div>
+  <main id="screenHome" class="app-shell">
+    <header class="top-bar">
+      <button id="btnOpenMenu" class="menu-btn gold-border" type="button">≡ Menu</button>
+
+      <div class="brand-colorful gold-border" aria-label="BolaClip">
+        <span>B</span><span>o</span><span>l</span><span>a</span><span>C</span><span>l</span><span>i</span><span>p</span>
       </div>
-      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3">
-        <div class="text-xs font-bold text-emerald-700">COM BOLACLIP: 80%</div>
-        <div class="text-[11px] text-gray-600 mt-0.5">2s em 1 clique</div>
-      </div>
-    </div>
-  </div>
 
-  <div class="candy-card p-5 space-y-3">
-    <div class="text-center">
-      <div class="text-lg font-extrabold text-pink-600">Entrar no BolaClip</div>
-      <div class="text-xs text-gray-600">Use o PIN do aparelho ou acesso rápido</div>
-    </div>
-
-    <button onclick="unlockApp()" class="w-full py-3 rounded-2xl font-bold text-white bg-emerald-500 shadow">
-      Entrar com Biometria / Passkey
-    </button>
-
-    <div class="space-y-2 pt-1">
-      <input id="pinInput" type="password" value="1234" placeholder="Senha / PIN do celular (padrão: 1234)"
-        class="w-full px-4 py-2.5 rounded-xl border border-pink-200 bg-white text-sm outline-none" />
-      <button onclick="unlockWithPin()" class="w-full py-2.5 rounded-2xl font-bold text-white bg-pink-500">
-        Desbloquear com Senha
+      <button id="btnGoldSignature" class="gold-signature-btn" type="button" title="Assinatura do Autor">
+        👑 Autor
       </button>
-      <button onclick="unlockApp()" class="w-full py-2 rounded-2xl font-bold text-amber-950 bg-amber-300 text-sm">
-        Acesso Rápido de Teste
-      </button>
-    </div>
-  </div>
-</div>
+    </header>
 
-<!-- TELA 2: BANCADA PRINCIPAL -->
-<div id="screenHome" class="app-shell max-w-md mx-auto hidden space-y-4">
-  <div class="flex items-center justify-between">
-    <button onclick="toggleDrawer(true)" class="px-4 py-2 rounded-2xl bg-white border border-pink-200 font-bold text-sm shadow-sm">
-      ≡ Menu
-    </button>
-    <button onclick="openCredits(true)" class="w-11 h-11 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 text-white font-bold shadow flex items-center justify-center">
-      ✦
-    </button>
-  </div>
+    <section class="hero-card gold-border">
+      <button id="btnStartMatrix" class="start-bubble" type="button">Iniciar</button>
+      <div class="pill-hint gold-border">Toque em Iniciar para ativar a Bola Matriz (+)</div>
+    </section>
 
-  <div class="flex flex-col items-center justify-center py-2 space-y-3">
-    <button id="btnStart" onclick="startOverlayMode()" class="start-bubble">Iniciar</button>
-    <div class="px-4 py-1.5 rounded-full bg-white/90 border border-pink-200 text-xs font-semibold text-purple-900 shadow-sm">
-      Toque na bola verde Iniciar para sobrepor
-    </div>
-  </div>
+    <section class="bench-card gold-border">
+      <h1 class="bench-title">Sua bancada doce de atalhos rápidos</h1>
+      <p class="bench-sub">
+        Salve até 30 bolinhas na conta por senha única e abra até 10 na tela sem bagunça.
+      </p>
 
-  <div class="candy-card p-4 space-y-3">
-    <div>
-      <h2 class="font-extrabold text-base text-purple-950">Sua bancada doce de atalhos rápidos</h2>
-      <p class="text-xs text-gray-600">Salve até 30 bolinhas na conta e abra até 10 na tela sem bagunça.</p>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5 text-xs">
-      <div class="bg-white rounded-2xl p-3 border border-pink-100">
-        <div class="font-bold text-pink-600">⚡ 1 Clique</div>
-        <div class="text-gray-600 mt-0.5">Copia o texto na hora</div>
+      <div class="gestures-grid">
+        <div class="gesture-box gold-border">
+          <div class="gesture-title">⚡ 1 Clique</div>
+          <div class="gesture-desc">Copia o conteúdo da bolinha na hora.</div>
+        </div>
+        <div class="gesture-box gold-border">
+          <div class="gesture-title">✏️ 2 Cliques</div>
+          <div class="gesture-desc">Abre a caixa limpa para editar nome e texto.</div>
+        </div>
+        <div class="gesture-box gold-border">
+          <div class="gesture-title">✕ 3 Cliques</div>
+          <div class="gesture-desc">Fecha a bolinha da tela.</div>
+        </div>
+        <div class="gesture-box gold-border">
+          <div class="gesture-title">🧲 Arrastar no +</div>
+          <div class="gesture-desc">Arraste até a Bola Matriz para salvar.</div>
+        </div>
       </div>
-      <div class="bg-white rounded-2xl p-3 border border-pink-100">
-        <div class="font-bold text-purple-600">✏️ 2 Cliques</div>
-        <div class="text-gray-600 mt-0.5">Abre e edita o texto</div>
+    </section>
+
+    <section class="tips-bar gold-border">
+      <div style="font-size:12px;font-weight:800;">Como funciona • Dicas de uso</div>
+      <button id="btnOpenTips" class="btn-pink gold-border" type="button">Ver dicas</button>
+    </section>
+  </main>
+
+  <!-- Bola Matriz fixa em 32px -->
+  <div id="matrixBall" class="hidden" title="Bola Matriz">+</div>
+
+  <!-- Gaveta Lateral do Menu -->
+  <div id="drawerBackdrop" class="overlay-backdrop hidden"></div>
+  <aside id="drawerPanel" class="drawer-panel gold-border hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <strong style="font-size:16px;">🍬 Menu BolaClip</strong>
+      <button id="btnCloseDrawer" class="secondary-btn" type="button">✕ Fechar</button>
+    </div>
+
+    <!-- Acesso e Resgate por Senha Única no GitHub -->
+    <div class="section-box gold-border">
+      <div class="section-title">🔐 Senha Única (Sem Login) • GitHub</div>
+      <input id="vaultPasswordInput" type="password" placeholder="Digite sua senha única..." autocomplete="off" />
+      <div class="btn-row">
+        <button id="btnUnlockAndFetchGitHub" class="action-btn" type="button">🔓 Abrir & Puxar do GitHub</button>
+        <button id="btnSyncPushGitHub" class="secondary-btn" type="button">☁️ Salvar no GitHub</button>
       </div>
-      <div class="bg-white rounded-2xl p-3 border border-pink-100">
-        <div class="font-bold text-rose-600">✕ 3 Cliques</div>
-        <div class="text-gray-600 mt-0.5">Fecha a bolinha da tela</div>
-      </div>
-      <div class="bg-white rounded-2xl p-3 border border-pink-100">
-        <div class="font-bold text-emerald-700">⭐ Arrastar no +</div>
-        <div class="text-gray-600 mt-0.5">Arraste uma bolinha até a Bola Matriz para salvar</div>
+      <div id="vaultStatusText" style="font-size:11px;color:var(--ink-soft);"></div>
+    </div>
+
+    <!-- Trocar Senha Única (sempre visível no Menu) -->
+    <div class="section-box gold-border">
+      <div class="section-title">🔑 Trocar Senha Única</div>
+      <input id="currentPasswordInput" type="password" placeholder="Senha única atual..." autocomplete="off" />
+      <input id="newPasswordInput" type="password" placeholder="Nova senha única..." autocomplete="off" />
+      <button id="btnChangePassword" class="action-btn" type="button">💾 Atualizar Senha Única</button>
+    </div>
+
+    <!-- Bolinhas Salvas -->
+    <div class="section-box gold-border">
+      <div class="section-title">🫧 Bolinhas Salvas (até 30)</div>
+      <div id="savedVaultList" style="display:flex;flex-direction:column;gap:8px;">
+        <div style="font-size:12px;color:var(--ink-soft);">Digite sua senha única acima para abrir suas bolinhas salvas.</div>
       </div>
     </div>
-    <div class="flex items-center justify-between bg-white rounded-2xl px-3.5 py-2.5 border border-pink-100">
-      <span class="text-xs font-bold text-purple-900">Como funciona • Dicas de uso</span>
-      <button onclick="openTips(true)" class="px-3 py-1.5 rounded-xl bg-pink-500 text-white text-xs font-bold">
-        Ver dicas
-      </button>
+  </aside>
+
+  <!-- Modal Assinatura Dourada Exclusiva -->
+  <div id="signatureModal" class="overlay-backdrop hidden">
+    <div class="modal-box gold-border">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-size:16px;">👑 Assinatura Oficial</strong>
+        <button id="btnCloseSignature" class="secondary-btn" type="button">✕</button>
+      </div>
+      <div class="section-box gold-border" style="background:linear-gradient(135deg,#fff9dc,#ffe9f3);text-align:center;">
+        <div style="font-size:17px;font-weight:900;">✨ Esteffeson Matheus Barquete ✨</div>
+        <div style="font-size:12px;font-weight:700;">📧 barqueteesteffeson@gmail.com</div>
+        <div style="font-size:12px;font-weight:700;">📱 WhatsApp: (54) 99329-1661</div>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- MENU LATERAL -->
-<div id="drawerOverlay" class="fixed inset-0 bg-black/40 z-40 hidden" onclick="toggleDrawer(false)">
-  <div class="w-80 max-w-[88vw] h-full bg-white p-4 overflow-y-auto space-y-4" onclick="event.stopPropagation()">
-    <div class="flex items-center justify-between">
-      <span class="font-extrabold text-purple-950">Menu BolaClip</span>
-      <button onclick="toggleDrawer(false)" class="px-2.5 py-1 rounded-lg bg-pink-100 font-bold text-xs">✕</button>
-    </div>
-
-    <div class="p-3 rounded-2xl bg-pink-50 border border-pink-200 space-y-2">
-      <div class="text-xs font-bold text-pink-700">Sincronizar entre celulares</div>
-      <input id="syncCodeInput" placeholder="Código de sincronização..." class="w-full px-3 py-2 rounded-xl border text-xs bg-white" />
-      <div class="grid grid-cols-2 gap-2">
-        <button onclick="copySyncCode()" class="py-2 rounded-xl bg-pink-500 text-white text-xs font-bold">Copiar Chave</button>
-        <button onclick="importSyncCode()" class="py-2 rounded-xl bg-emerald-500 text-white text-xs font-bold">Importar</button>
+  <!-- Modal Dicas -->
+  <div id="tipsModal" class="overlay-backdrop hidden">
+    <div class="modal-box gold-border">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-size:15px;">💡 Dicas de Uso</strong>
+        <button id="btnCloseTips" class="secondary-btn" type="button">✕</button>
+      </div>
+      <div style="font-size:12px;line-height:1.5;color:var(--ink-soft);">
+        • Toque em <strong>Iniciar</strong> para ativar a <strong>Bola Matriz (+)</strong>.<br/>
+        • Toque na <strong>Bola Matriz (+)</strong> para abrir a caixa de criação com <strong>Nome</strong>, <strong>Texto</strong> e botão <strong>Criar</strong>.<br/>
+        • Arraste uma bolinha até a <strong>Bola Matriz (+)</strong> para salvar no cofre.<br/>
+        • Digite <strong>Therion@02</strong> dentro de uma bolinha para abrir o Painel Secreto.
       </div>
     </div>
+  </div>
 
-    <div class="p-3 rounded-2xl bg-purple-50 border border-purple-200 space-y-2">
-      <div class="text-xs font-bold text-purple-900">Meus dados</div>
-      <input id="userEmailInput" value="barqueteesteffeson@gmail.com" placeholder="E-mail" class="w-full px-3 py-2 rounded-xl border text-xs bg-white" />
-      <input id="userPinInput" value="1234" placeholder="PIN / Senha" class="w-full px-3 py-2 rounded-xl border text-xs bg-white" />
-      <button onclick="saveUserData()" class="w-full py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold">Salvar Dados</button>
-    </div>
-
-    <div class="p-3 rounded-2xl bg-gray-50 border space-y-2">
-      <div class="flex items-center justify-between">
-        <span class="text-xs font-bold">Bolinhas salvas (<span id="savedCount">0</span>/30)</span>
-        <button onclick="openCreateBubbleModal()" class="px-2.5 py-1 rounded-lg bg-emerald-500 text-white text-xs font-bold">+ Nova</button>
+  <!-- Modal Criar Bolinha (ao clicar na Bola Matriz) -->
+  <div id="createBubbleModal" class="overlay-backdrop hidden">
+    <div class="modal-box gold-border">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-size:15px;">✨ Nova Bolinha</strong>
+        <button id="btnCancelCreate" class="secondary-btn" type="button">✕</button>
       </div>
-      <div id="savedBubblesList" class="space-y-2"></div>
+      <label style="font-size:12px;font-weight:800;">Nome da bolinha</label>
+      <input id="createNameInput" type="text" placeholder="" autocomplete="off" />
+      <label style="font-size:12px;font-weight:800;">Texto da bolinha</label>
+      <textarea id="createTextInput" placeholder=""></textarea>
+      <button id="btnConfirmCreate" class="action-btn" type="button">Criar</button>
     </div>
   </div>
-</div>
 
-<!-- MODAL ASSINATURA -->
-<div id="creditsModal" class="fixed inset-0 bg-black/45 z-50 hidden items-center justify-center p-4">
-  <div class="candy-card max-w-sm w-full p-5 text-center space-y-3">
-    <div class="text-xl font-extrabold text-pink-600">BolaClip</div>
-    <div class="font-bold text-sm text-purple-950">Desenvolvido por Esteffeson Barquete</div>
-    <div class="text-xs font-semibold text-pink-600">barqueteesteffeson@gmail.com • WhatsApp 54993291661</div>
-    <p class="text-xs text-gray-700 leading-relaxed">
-      "Feito com carinho, capricho e doçura para transformar cada cópia do seu dia em um atalho leve e rápido."
-    </p>
-    <div class="flex gap-2">
-      <button onclick="copyContact()" class="flex-1 py-2.5 rounded-xl bg-purple-600 text-white text-xs font-bold">Copiar contato</button>
-      <button onclick="openCredits(false)" class="flex-1 py-2.5 rounded-xl bg-emerald-500 text-white text-xs font-bold">Fechar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL DICAS -->
-<div id="tipsModal" class="fixed inset-0 bg-black/45 z-50 hidden items-center justify-center p-4">
-  <div class="candy-card max-w-sm w-full p-5 space-y-3">
-    <div class="font-extrabold text-base text-purple-950">Como funciona • Dicas de uso</div>
-    <ul class="text-xs text-gray-700 space-y-2 list-disc pl-4">
-      <li><b>Bola Matriz (+):</b> 1 clique cria uma bolinha (até 5 letras no visor + texto); 2 cliques abrem as salvas; 3 cliques fecham tudo.</li>
-      <li><b>Salvar arrastando:</b> arraste qualquer bolinha flutuante até a Bola Matriz (+) para salvar na conta.</li>
-      <li><b>Nas bolinhas:</b> 1 clique copia o texto, 2 cliques abrem o texto, 3 cliques fecham a bolinha.</li>
-    </ul>
-    <button onclick="openTips(false)" class="w-full py-2.5 rounded-xl bg-pink-500 text-white text-xs font-bold">Entendi</button>
-  </div>
-</div>
-
-<!-- MODAL CRIAR BOLINHA -->
-<div id="createBubbleModal" class="fixed inset-0 bg-black/45 z-50 hidden items-center justify-center p-4">
-  <div class="candy-card max-w-sm w-full p-5 space-y-3">
-    <div class="flex items-center justify-between">
-      <span class="font-extrabold text-base text-purple-950">Nova Bolinha</span>
-      <button onclick="closeCreateBubbleModal()" class="text-sm font-bold text-gray-500">✕</button>
-    </div>
-    <input id="bubbleNameInput" maxlength="5" placeholder="Nome (até 5 letras, ex: PIX)" class="w-full px-3 py-2 rounded-xl border text-sm bg-white" />
-    <textarea id="bubbleTextInput" rows="4" placeholder="Digite o texto da bolinha..." class="w-full px-3 py-2 rounded-xl border text-sm bg-white"></textarea>
-    <button onclick="submitNewBubble()" class="w-full py-2.5 rounded-xl bg-emerald-500 text-white text-sm font-bold">Salvar / Criar</button>
-  </div>
-</div>
-
-<!-- PAINEL SECRETO THERION@02 -->
-<div id="secretPanelModal" class="fixed inset-0 bg-black/60 z-50 hidden items-center justify-center p-3 overflow-y-auto">
-  <div class="candy-card max-w-lg w-full p-4 space-y-3 my-auto">
-    <div class="flex items-center justify-between">
-      <span class="font-extrabold text-sm text-purple-950">Painel de Adendos & GitHub (Therion@02)</span>
-      <button onclick="closeSecretPanel()" class="px-2.5 py-1 rounded-lg bg-pink-100 text-xs font-bold">✕</button>
-    </div>
-
-    <div class="grid grid-cols-1 gap-2 text-xs">
-      <input id="ghOwner" value="miguelspotfy-code" placeholder="GitHub Owner" class="px-3 py-2 rounded-xl border bg-white" />
-      <input id="ghRepo" value="Bolaclip-sync" placeholder="GitHub Repo" class="px-3 py-2 rounded-xl border bg-white" />
-      <input id="ghToken" type="password" placeholder="Cole seu GitHub Token (ghp_...)" class="px-3 py-2 rounded-xl border bg-white" />
-    </div>
-
-    <textarea id="addendumCodeInput" rows="3" placeholder="Cole aqui o código ou atualização do adendo..." class="w-full px-3 py-2 rounded-xl border text-xs bg-white"></textarea>
-    <div class="grid grid-cols-2 gap-2">
-      <button onclick="testAddendumClone()" class="py-2 rounded-xl bg-purple-600 text-white text-xs font-bold">Testar no Clone</button>
-      <button onclick="approveAddendum()" class="py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold">Aprovar Adendo</button>
-    </div>
-    <div id="cloneTestResult" class="text-[11px] p-2 rounded-xl bg-white border text-gray-700">Clone pronto para teste.</div>
-
-    <div class="space-y-1.5">
-      <div class="text-xs font-bold">Adendos aplicados (<span id="addendumCount">0</span>)</div>
-      <div id="addendumsList" class="space-y-1.5 max-h-32 overflow-y-auto"></div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-2">
-      <button onclick="sendCodeToGmail(false)" class="py-2 rounded-xl bg-pink-500 text-white text-xs font-bold">Gmail: Código Original</button>
-      <button onclick="sendCodeToGmail(true)" class="py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold">Gmail: Com Adendos</button>
-    </div>
-
-    <button onclick="pushToGitHub()" class="w-full py-2.5 rounded-xl bg-gray-900 text-white text-xs font-bold">
-      Atualizar via GitHub (Bolaclip-sync)
-    </button>
-    <div id="ghStatus" class="text-[11px] text-center text-purple-900 font-semibold"></div>
-  </div>
-</div>
-
-<!-- CAMADA DE SOBREPOSIÇÃO -->
-<div id="overlayLayer" class="floating-overlay hidden">
-  <button id="matrixBall" class="matrix-ball" title="Bola Matriz">+</button>
-  <div id="activeBubblesContainer"></div>
-</div>
-
-<script>
-const STORAGE_KEY = 'bolaclip_state_v1';
-let state = {
-  pin: '1234',
-  email: 'barqueteesteffeson@gmail.com',
-  savedBubbles: [],
-  activeBubbles: [],
-  addendums: [],
-  cloneApproved: false
-};
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) state = { ...state, ...JSON.parse(raw) };
-  } catch (e) {}
-  document.getElementById('userEmailInput').value = state.email;
-  document.getElementById('userPinInput').value = state.pin;
-  renderSavedList();
-  renderAddendums();
-}
-
-function saveState() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (e) {}
-  renderSavedList();
-  renderAddendums();
-}
-
-function initSprinkles() {
-  const wp = document.getElementById('wallpaper');
-  const colors = ['#ff6b9d', '#8b5cf6', '#10b981', '#f59e0b', '#38bdf8'];
-  for (let i = 0; i < 12; i++) {
-    const el = document.createElement('div');
-    el.className = 'sprinkle';
-    const size = 8 + (i % 3) * 5;
-    el.style.width = size + 'px';
-    el.style.height = size + 'px';
-    el.style.left = ((i * 8.5) % 96) + '%';
-    el.style.background = colors[i % colors.length];
-    el.style.animationDuration = (9 + (i % 5) * 2) + 's';
-    el.style.animationDelay = -(i * 1.3) + 's';
-    wp.appendChild(el);
-  }
-}
-
-function unlockWithPin() {
-  const val = document.getElementById('pinInput').value.trim();
-  if (val === state.pin || val === '1234') {
-    unlockApp();
-  } else {
-    alert('Senha/PIN incorreto. Padrão: ' + state.pin);
-  }
-}
-
-function unlockApp() {
-  var lockEl = document.getElementById('screenLock'); if (lockEl) { lockEl.classList.add('hidden'); lockEl.style.display = 'none'; }
-  var homeEl = document.getElementById('screenHome'); if (homeEl) { homeEl.classList.remove('hidden'); homeEl.style.display = 'block'; }
-  return;
-}
-
-function toggleDrawer(show) {
-  document.getElementById('drawerOverlay').classList.toggle('hidden', !show);
-}
-
-function openCredits(show) {
-  const m = document.getElementById('creditsModal');
-  m.classList.toggle('hidden', !show);
-  m.classList.toggle('flex', show);
-}
-
-function openTips(show) {
-  const m = document.getElementById('tipsModal');
-  m.classList.toggle('hidden', !show);
-  m.classList.toggle('flex', show);
-}
-
-function copyContact() {
-  const txt = 'Esteffeson Barquete | barqueteesteffeson@gmail.com | WhatsApp: 54993291661';
-  navigator.clipboard?.writeText(txt);
-  alert('Contato copiado!');
-}
-
-function saveUserData() {
-  state.email = document.getElementById('userEmailInput').value.trim() || state.email;
-  state.pin = document.getElementById('userPinInput').value.trim() || state.pin;
-  saveState();
-  alert('Dados salvos!');
-}
-
-function copySyncCode() {
-  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
-    email: state.email,
-    savedBubbles: state.savedBubbles,
-    addendums: state.addendums
-  }))));
-  document.getElementById('syncCodeInput').value = payload;
-  navigator.clipboard?.writeText(payload);
-  alert('Código de sincronização copiado!');
-}
-
-function importSyncCode() {
-  const raw = document.getElementById('syncCodeInput').value.trim();
-  if (!raw) return alert('Cole um código de sincronização.');
-  try {
-    const parsed = JSON.parse(decodeURIComponent(escape(atob(raw))));
-    if (Array.isArray(parsed.savedBubbles)) state.savedBubbles = parsed.savedBubbles.slice(0, 30);
-    if (Array.isArray(parsed.addendums)) state.addendums = parsed.addendums;
-    if (parsed.email) state.email = parsed.email;
-    saveState();
-    alert('Dados sincronizados com sucesso!');
-  } catch (e) {
-    alert('Código de sincronização inválido.');
-  }
-}
-
-function startOverlayMode() {
-  document.getElementById('screenHome').classList.add('hidden');
-  document.getElementById('overlayLayer').classList.remove('hidden');
-  renderActiveBubbles();
-}
-
-function stopOverlayMode() {
-  state.activeBubbles = [];
-  document.getElementById('overlayLayer').classList.add('hidden');
-  document.getElementById('screenHome').classList.remove('hidden');
-  renderActiveBubbles();
-}
-
-function openCreateBubbleModal() {
-  document.getElementById('bubbleNameInput').value = '';
-  document.getElementById('bubbleTextInput').value = '';
-  const m = document.getElementById('createBubbleModal');
-  m.classList.remove('hidden');
-  m.classList.add('flex');
-}
-
-function closeCreateBubbleModal() {
-  const m = document.getElementById('createBubbleModal');
-  m.classList.add('hidden');
-  m.classList.remove('flex');
-}
-
-function submitNewBubble() {
-  const name = document.getElementById('bubbleNameInput').value.trim().slice(0, 5) || 'NOTA';
-  const text = document.getElementById('bubbleTextInput').value;
-
-  if (text.trim() === 'Therion@02' || name === 'Therion@02') {
-    closeCreateBubbleModal();
-    openSecretPanel();
-    return;
-  }
-
-  if (state.activeBubbles.length >= 10) {
-    alert('Limite de 10 bolinhas abertas na tela atingido.');
-    return;
-  }
-
-  const idx = state.activeBubbles.length;
-  state.activeBubbles.push({
-    id: Date.now() + '_' + Math.random().toString(36).slice(2, 6),
-    name,
-    text,
-    x: 24 + ((idx * 34) % 220),
-    y: 120 + ((idx * 48) % 340),
-    saved: false
-  });
-  closeCreateBubbleModal();
-  document.getElementById('overlayLayer').classList.remove('hidden');
-  renderActiveBubbles();
-}
-
-function saveBubbleToAccount(bubble) {
-  if (state.savedBubbles.length >= 30) {
-    alert('Limite de 30 bolinhas salvas atingido.');
-    return;
-  }
-  const existing = state.savedBubbles.find(b => b.name === bubble.name && b.text === bubble.text);
-  if (!existing) {
-    state.savedBubbles.push({ name: bubble.name, text: bubble.text });
-    saveState();
-  }
-  bubble.saved = true;
-  alert('Bolinha "' + bubble.name + '" salva na conta!');
-}
-
-function renderSavedList() {
-  const container = document.getElementById('savedBubblesList');
-  document.getElementById('savedCount').textContent = state.savedBubbles.length;
-  container.innerHTML = '';
-  state.savedBubbles.forEach((b, i) => {
-    const row = document.createElement('div');
-    row.className = 'flex items-center justify-between bg-white p-2 rounded-xl border text-xs';
-    row.innerHTML = `
-      <div class="truncate pr-2">
-        <b>${escapeHtml(b.name)}</b>: <span class="text-gray-600">${escapeHtml(b.text)}</span>
+  <!-- Modal Editar Bolinha (2 cliques) -->
+  <div id="editBubbleModal" class="overlay-backdrop hidden">
+    <div class="modal-box gold-border">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-size:15px;">✏️ Editar Bolinha</strong>
+        <button id="btnCloseEdit" class="secondary-btn" type="button">✕</button>
       </div>
-      <div class="flex gap-1 shrink-0">
-        <button onclick="openSavedBubble(${i})" class="px-2 py-1 rounded bg-emerald-500 text-white font-bold">Abrir</button>
-        <button onclick="deleteSavedBubble(${i})" class="px-2 py-1 rounded bg-pink-100 text-pink-700 font-bold">✕</button>
+      <label style="font-size:12px;font-weight:800;">Nome da bolinha</label>
+      <input id="editNameInput" type="text" placeholder="" autocomplete="off" />
+      <label style="font-size:12px;font-weight:800;">Texto da bolinha</label>
+      <textarea id="editTextInput" placeholder=""></textarea>
+      <div class="btn-row">
+        <button id="btnSaveEditBubble" class="action-btn" type="button">💾 Salvar Alterações</button>
+        <button id="btnSaveBubbleToVault" class="secondary-btn" type="button">🫧 Salvar no Cofre</button>
       </div>
-    `;
-    container.appendChild(row);
-  });
-}
+    </div>
+  </div>
 
-function openSavedBubble(i) {
-  const b = state.savedBubbles[i];
-  if (!b || state.activeBubbles.length >= 10) return;
-  state.activeBubbles.push({
-    id: Date.now() + '_' + i,
-    name: b.name,
-    text: b.text,
-    x: 40 + (i * 25) % 180,
-    y: 140 + (i * 35) % 280,
-    saved: true
-  });
-  toggleDrawer(false);
-  startOverlayMode();
-}
+  <!-- Painel Secreto Master (Gatilho Therion@02) -->
+  <div id="secretPanelModal" class="overlay-backdrop hidden">
+    <div class="modal-box gold-border">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="font-size:16px;">🛡️ Painel Secreto Master (Therion@02)</strong>
+        <button id="btnCloseSecretPanel" class="secondary-btn" type="button">✕</button>
+      </div>
 
-function deleteSavedBubble(i) {
-  state.savedBubbles.splice(i, 1);
-  saveState();
-}
+      <!-- Chaves e APIs/IPI trocáveis -->
+      <div class="section-box gold-border">
+        <div class="section-title">🔌 Chaves, GitHub & APIs / IPI</div>
+        <input id="cfgGhOwnerRepo" type="text" placeholder="Repositório GitHub (ex: miguelspotfy-code/bolaclip)" />
+        <input id="cfgGhBranch" type="text" placeholder="Branch (ex: main)" />
+        <input id="cfgGhPath" type="text" placeholder="Caminho do cofre (ex: bolaclip-vault.json)" />
+        <input id="cfgGhToken" type="password" placeholder="GitHub Token (opcional p/ leitura pública)" />
+        <input id="cfgApiEndpoint" type="text" placeholder="URL / Endpoint API ou IPI" />
+        <input id="cfgApiKey" type="password" placeholder="Chave API / IPI" />
+        <input id="cfgContactEmail" type="email" placeholder="E-mail de envio" />
+        <button id="btnSaveConfigKeys" class="action-btn" type="button">💾 Salvar Chaves & Configurações</button>
+      </div>
 
-function renderActiveBubbles() {
-  const container = document.getElementById('activeBubblesContainer');
-  container.innerHTML = '';
-  state.activeBubbles.forEach((b) => {
-    const el = document.createElement('div');
-    el.className = 'clip-bubble';
-    el.style.left = b.x + 'px';
-    el.style.top = b.y + 'px';
-    el.textContent = b.name;
+      <!-- Atualização OTA GitHub -->
+      <div class="section-box gold-border">
+        <div class="section-title">📡 Atualização & Sincronização GitHub</div>
+        <div class="btn-row">
+          <button id="btnCheckOtaGitHub" class="action-btn" type="button">🔄 Checar Atualização GitHub</button>
+          <button id="btnPushVaultNow" class="secondary-btn" type="button">⬆️ Enviar Cofre ao GitHub</button>
+        </div>
+        <div id="otaStatusBox" style="font-size:11px;color:var(--ink-soft);"></div>
+      </div>
 
-    let tapCount = 0;
-    let tapTimer = null;
-    let dragging = false;
-    let offsetX = 0, offsetY = 0;
+      <!-- Laboratório de Adendos (Clone -> Testar -> Aprovar Globalmente) -->
+      <div class="section-box gold-border">
+        <div class="section-title">🧪 Adendos (Clone Sandbox & Aprovação)</div>
+        <input id="addonTitleInput" type="text" placeholder="Nome do adendo..." />
+        <textarea id="addonCodeInput" placeholder="Cole aqui o código / snippet do adendo..."></textarea>
+        <div class="btn-row">
+          <button id="btnCreateCloneTest" class="secondary-btn" type="button">🧬 Criar Clone & Testar</button>
+          <button id="btnApproveGlobalAddon" class="action-btn" type="button">✅ Aprovar em Todos os Apps</button>
+        </div>
+        <div id="sandboxPreviewBox" class="hidden" style="background:#fff9dc;border:1.5px solid var(--gold);border-radius:12px;padding:8px;font-size:12px;"></div>
+        <div id="addonsListBox" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
 
-    const onDown = (clientX, clientY) => {
-      dragging = true;
-      offsetX = clientX - b.x;
-      offsetY = clientY - b.y;
-    };
+      <!-- Exportação de Código e E-mail -->
+      <div class="section-box gold-border">
+        <div class="section-title">📦 Código Completo & Envio por E-mail</div>
+        <div class="btn-row">
+          <button id="btnCopyFullCode" class="secondary-btn" type="button">📋 Copiar Código Completo</button>
+          <button id="btnCopyCodeWithAddons" class="action-btn" type="button">📋 Copiar Código + Adendos</button>
+        </div>
+        <div class="btn-row">
+          <button id="btnEmailFullCode" class="secondary-btn" type="button">✉️ Enviar Código por E-mail</button>
+          <button id="btnEmailCodeWithAddons" class="action-btn" type="button">✉️ Enviar Código + Adendos por E-mail</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    const onMove = (clientX, clientY) => {
-      if (!dragging) return;
-      b.x = Math.max(8, Math.min(window.innerWidth - 62, clientX - offsetX));
-      b.y = Math.max(8, Math.min(window.innerHeight - 62, clientY - offsetY));
-      el.style.left = b.x + 'px';
-      el.style.top = b.y + 'px';
-    };
+  <div id="toastBanner" class="toast-banner hidden"></div>
 
-    const onUp = () => {
-      if (!dragging) return;
-      dragging = false;
-      const matrixRect = document.getElementById('matrixBall').getBoundingClientRect();
-      const ballRect = el.getBoundingClientRect();
-      const overlap = !(
-        ballRect.right < matrixRect.left ||
-        ballRect.left > matrixRect.right ||
-        ballRect.bottom < matrixRect.top ||
-        ballRect.top > matrixRect.bottom
-      );
-      if (overlap) {
-        saveBubbleToAccount(b);
-      }
-    };
+  <script>
+    (function () {
+      const STORAGE_KEYS = {
+        PASS: 'bolaclip_single_pass_v1',
+        VAULT: 'bolaclip_vault_items_v1',
+        ADDONS: 'bolaclip_addons_list_v1',
+        GLOBAL_ADDONS: 'bolaclip_global_approved_addons_v1',
+        CONFIG: 'bolaclip_master_config_v1'
+      };
 
-    el.addEventListener('pointerdown', (e) => {
-      el.setPointerCapture(e.pointerId);
-      onDown(e.clientX, e.clientY);
-    });
-    el.addEventListener('pointermove', (e) => onMove(e.clientX, e.clientY));
-    el.addEventListener('pointerup', (e) => {
-      onUp();
-      tapCount++;
-      clearTimeout(tapTimer);
-      tapTimer = setTimeout(() => {
-        if (tapCount === 1) {
-          navigator.clipboard?.writeText(b.text || '');
-          alert('Copiado: ' + (b.text || ''));
-        } else if (tapCount === 2) {
-          const novo = prompt('Texto da bolinha (' + b.name + '):', b.text || '');
-          if (novo !== null) b.text = novo;
-        } else if (tapCount >= 3) {
-          state.activeBubbles = state.activeBubbles.filter(item => item.id !== b.id);
-          renderActiveBubbles();
+      const DEFAULT_CONFIG = {
+        ghRepo: 'miguelspotfy-code/bolaclip',
+        ghBranch: 'main',
+        ghPath: 'bolaclip-vault.json',
+        ghToken: '',
+        apiEndpoint: '',
+        apiKey: '',
+        email: 'barqueteesteffeson@gmail.com',
+        whatsapp: '54993291661',
+        author: 'Esteffeson Matheus Barquete'
+      };
+
+      function loadJson(key, fallback) {
+        try {
+          const raw = localStorage.getItem(key);
+          return raw ? JSON.parse(raw) : fallback;
+        } catch (e) {
+          return fallback;
         }
-        tapCount = 0;
-      }, 280);
-    });
+      }
 
-    container.appendChild(el);
-  });
-}
+      function saveJson(key, val) {
+        try {
+          localStorage.setItem(key, JSON.stringify(val));
+        } catch (e) {}
+      }
 
-// Bola Matriz (+): 1 clique cria, 2 cliques abrem salvas, 3 cliques fecham tudo
-let matrixTaps = 0;
-let matrixTimer = null;
-document.getElementById('matrixBall').addEventListener('click', () => {
-  matrixTaps++;
-  clearTimeout(matrixTimer);
-  matrixTimer = setTimeout(() => {
-    if (matrixTaps === 1) {
-      openCreateBubbleModal();
-    } else if (matrixTaps === 2) {
-      toggleDrawer(true);
-    } else if (matrixTaps >= 3) {
-      stopOverlayMode();
-    }
-    matrixTaps = 0;
-  }, 280);
-});
+      if (!localStorage.getItem(STORAGE_KEYS.PASS)) {
+        localStorage.setItem(STORAGE_KEYS.PASS, '1234');
+      }
 
-// Painel Secreto Therion@02
-function openSecretPanel() {
-  state.cloneApproved = false;
-  document.getElementById('cloneTestResult').textContent = 'Clone pronto para teste.';
-  const m = document.getElementById('secretPanelModal');
-  m.classList.remove('hidden');
-  m.classList.add('flex');
-}
+      let config = Object.assign({}, DEFAULT_CONFIG, loadJson(STORAGE_KEYS.CONFIG, {}));
+      let vaultItems = loadJson(STORAGE_KEYS.VAULT, []);
+      let addonsList = loadJson(STORAGE_KEYS.ADDONS, []);
+      let activeBubbles = [];
+      let matrixActive = false;
+      let vaultUnlocked = false;
+      let editingBubbleId = null;
+      let sandboxDraft = null;
+      let toastTimer = null;
 
-function closeSecretPanel() {
-  const m = document.getElementById('secretPanelModal');
-  m.classList.add('hidden');
-  m.classList.remove('flex');
-}
+      function showToast(msg) {
+        const el = document.getElementById('toastBanner');
+        el.textContent = msg;
+        el.classList.remove('hidden');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => el.classList.add('hidden'), 2400);
+      }
 
-function testAddendumClone() {
-  const code = document.getElementById('addendumCodeInput').value.trim();
-  if (!code) {
-    document.getElementById('cloneTestResult').textContent = 'Cole um código antes de testar no clone.';
-    return;
-  }
-  state.cloneApproved = true;
-  document.getElementById('cloneTestResult').textContent = 'Clone isolado testado com sucesso (' + code.length + ' caracteres). Pode aprovar.';
-}
+      function notifyNativeOverlay(actionName, payload) {
+        try {
+          if (window.AndroidOverlay && typeof window.AndroidOverlay[actionName] === 'function') {
+            window.AndroidOverlay[actionName](JSON.stringify(payload || {}));
+          } else if (window.AndroidBridge && typeof window.AndroidBridge.postMessage === 'function') {
+            window.AndroidBridge.postMessage(JSON.stringify({ action: actionName, payload: payload || {} }));
+          }
+        } catch (e) {}
+      }
 
-function approveAddendum() {
-  const code = document.getElementById('addendumCodeInput').value.trim();
-  if (!code) return alert('Insira o código do adendo.');
-  if (!state.cloneApproved) {
-    alert('Teste no clone antes de aprovar.');
-    return;
-  }
-  state.addendums.push({
-    id: Date.now(),
-    code,
-    date: new Date().toLocaleString('pt-BR')
-  });
-  document.getElementById('addendumCodeInput').value = '';
-  state.cloneApproved = false;
-  saveState();
-}
+      /* Chuva contínua de bolinhas e pirulitos */
+      function initCandyRain() {
+        const layer = document.getElementById('candy-rain-layer');
+        layer.innerHTML = '';
+        const colors = ['#ff85b3', '#b892ff', '#7dd3fc', '#86efac', '#fde047', '#ffb380'];
+        for (let i = 0; i < 24; i++) {
+          const left = ((i * 19) % 94) + 2;
+          const delay = -((i * 1.3) % 10);
+          const duration = 8 + (i % 6) * 1.6;
+          if (i % 3 === 0) {
+            const lollipop = document.createElement('div');
+            lollipop.className = 'rain-item';
+            lollipop.style.left = left + '%';
+            lollipop.style.animationDelay = delay + 's';
+            lollipop.style.animationDuration = duration + 's';
+            const c = colors[i % colors.length];
+            lollipop.innerHTML = `
+              <svg width="28" height="44" viewBox="0 0 28 44" fill="none">
+                <rect x="12.5" y="22" width="3" height="20" rx="1.5" fill="#fff7d6" stroke="#d4af37" stroke-width="1"/>
+                <circle cx="14" cy="14" r="11" fill="${c}" stroke="#ffffff" stroke-width="2"/>
+                <path d="M14 7C17.8 7 21 10.2 21 14C21 17.8 17.8 21 14 21C11 21 8.8 18.7 8.8 15.8C8.8 13.6 10.6 12 12.8 12C14.3 12 15.5 13.2 15.5 14.7" stroke="#ffffff" stroke-width="1.7" stroke-linecap="round"/>
+              </svg>`;
+            layer.appendChild(lollipop);
+          } else {
+            const orb = document.createElement('div');
+            orb.className = 'rain-item rain-orb';
+            const size = 10 + (i % 4) * 4;
+            orb.style.width = size + 'px';
+            orb.style.height = size + 'px';
+            orb.style.left = left + '%';
+            orb.style.background = colors[i % colors.length];
+            orb.style.animationDelay = delay + 's';
+            orb.style.animationDuration = duration + 's';
+            layer.appendChild(orb);
+          }
+        }
+      }
 
-function renderAddendums() {
-  const list = document.getElementById('addendumsList');
-  document.getElementById('addendumCount').textContent = state.addendums.length;
-  list.innerHTML = '';
-  state.addendums.forEach((ad, idx) => {
-    const div = document.createElement('div');
-    div.className = 'flex items-center justify-between bg-white p-2 rounded-xl border text-[11px]';
-    div.innerHTML = `
-      <span class="truncate pr-2"><b>#${idx + 1}</b> (${ad.date}): ${escapeHtml(ad.code)}</span>
-      <div class="flex gap-1 shrink-0">
-        <button onclick="copyAddendum(${idx})" class="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-bold">Copiar</button>
-        <button onclick="deleteAddendum(${idx})" class="px-2 py-0.5 rounded bg-red-100 text-red-700 font-bold">Excluir</button>
-      </div>
-    `;
-    list.appendChild(div);
-  });
-}
+      /* Bola Matriz (32px) com arraste e toque confiável */
+      const matrixBall = document.getElementById('matrixBall');
 
-function copyAddendum(idx) {
-  navigator.clipboard?.writeText(state.addendums[idx].code);
-  alert('Adendo copiado!');
-}
+      function activateMatrixBall() {
+        matrixActive = true;
+        matrixBall.classList.remove('hidden');
+        notifyNativeOverlay('matrixActivated', { active: true });
+        showToast('Bola Matriz (+) ativada!');
+      }
 
-function deleteAddendum(idx) {
-  state.addendums.splice(idx, 1);
-  saveState();
-}
+      document.getElementById('btnStartMatrix').addEventListener('click', activateMatrixBall);
 
-function buildFullCode(includeAddendums) {
-  const baseHtml = document.documentElement.outerHTML;
-  if (!includeAddendums || state.addendums.length === 0) return baseHtml;
-  const block = '\n<!-- ADENDOS APROVADOS -->\n<script>\n' +
-    state.addendums.map((a, i) => `// Adendo #${i + 1}\n${a.code}`).join('\n\n') +
-    '\n<\/script>';
-  return baseHtml.replace('</body>', block + '\n</body>');
-}
+      function openCreateBubbleModal() {
+        document.getElementById('createNameInput').value = '';
+        document.getElementById('createTextInput').value = '';
+        document.getElementById('createBubbleModal').classList.remove('hidden');
+        setTimeout(() => document.getElementById('createNameInput').focus(), 40);
+      }
 
-function sendCodeToGmail(includeAddendums) {
-  const subject = encodeURIComponent(includeAddendums ? 'BolaClip - Código com Adendos' : 'BolaClip - Código Original Completo');
-  const body = encodeURIComponent(buildFullCode(includeAddendums).slice(0, 6000));
-  window.open(`https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`, '_blank');
-}
+      let matrixDragState = null;
 
-async function pushToGitHub() {
-  const owner = document.getElementById('ghOwner').value.trim();
-  const repo = document.getElementById('ghRepo').value.trim();
-  const token = document.getElementById('ghToken').value.trim();
-  const statusEl = document.getElementById('ghStatus');
+      function startMatrixDrag(clientX, clientY) {
+        const rect = matrixBall.getBoundingClientRect();
+        matrixDragState = {
+          startX: clientX,
+          startY: clientY,
+          origRight: window.innerWidth - rect.right,
+          origBottom: window.innerHeight - rect.bottom,
+          moved: false
+        };
+      }
 
-  if (!owner || !repo || !token) {
-    statusEl.textContent = 'Preencha Owner, Repo e Token do GitHub.';
-    return;
-  }
+      function moveMatrixDrag(clientX, clientY) {
+        if (!matrixDragState) return;
+        const dx = clientX - matrixDragState.startX;
+        const dy = clientY - matrixDragState.startY;
+        if (Math.hypot(dx, dy) > 8) {
+          matrixDragState.moved = true;
+          const nextRight = Math.max(8, Math.min(window.innerWidth - 40, matrixDragState.origRight - dx));
+          const nextBottom = Math.max(8, Math.min(window.innerHeight - 40, matrixDragState.origBottom - dy));
+          matrixBall.style.right = nextRight + 'px';
+          matrixBall.style.bottom = nextBottom + 'px';
+        }
+      }
 
-  statusEl.textContent = 'Enviando atualização ao GitHub...';
-  const payloadObj = {
-    updatedAt: new Date().toISOString(),
-    developer: 'Esteffeson Barquete',
-    addendums: state.addendums,
-    savedBubbles: state.savedBubbles
-  };
-  const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj, null, 2))));
-  const path = 'bolaclip-sync-state.json';
-  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+      function endMatrixDrag() {
+        if (!matrixDragState) return;
+        const wasMoved = matrixDragState.moved;
+        matrixDragState = null;
+        if (!wasMoved) {
+          openCreateBubbleModal();
+        }
+      }
 
-  try {
-    let sha = undefined;
-    const getRes = await fetch(url, {
-      headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github+json' }
-    });
-    if (getRes.ok) {
-      const getJson = await getRes.json();
-      sha = getJson.sha;
-    }
+      matrixBall.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        startMatrixDrag(e.clientX, e.clientY);
+      });
+      window.addEventListener('mousemove', (e) => moveMatrixDrag(e.clientX, e.clientY));
+      window.addEventListener('mouseup', endMatrixDrag);
 
-    const putRes = await fetch(url, {
-      method: 'PUT',
-      headers: {
-        Authorization: `token ${token}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        message: 'Sync BolaClip addendums & bubbles',
-        content: contentBase64,
-        sha
-      })
-    });
+      matrixBall.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 0) {
+          startMatrixDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+      window.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 0) {
+          moveMatrixDrag(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+      window.addEventListener('touchend', endMatrixDrag);
 
-    if (putRes.ok) {
-      statusEl.textContent = 'Sincronizado no GitHub com sucesso!';
-    } else {
-      const errData = await putRes.json().catch(() => ({}));
-      statusEl.textContent = 'Erro GitHub: ' + (errData.message || putRes.status);
-    }
-  } catch (e) {
-    statusEl.textContent = 'Falha de rede ao conectar ao GitHub.';
-  }
-}
+      /* Criação, gestos (1, 2, 3 cliques) e arrastar até a Bola Matriz para salvar */
+      function spawnClipBubble(name, text) {
+        const trimmedName = (name || '').trim();
+        const trimmedText = (text || '').trim();
 
-function escapeHtml(str) {
-  return String(str || '').replace(/[&<>"']/g, m => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[m]));
-}
+        if (trimmedName === 'Therion@02' || trimmedText === 'Therion@02') {
+          openSecretPanel();
+          return;
+        }
 
-initSprinkles();
-loadState();
-</script>
+        if (activeBubbles.length >= 10) {
+          showToast('Limite de 10 bolinhas na tela atingido.');
+          return;
+        }
+
+        const id = 'clip_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+        const item = {
+          id,
+          name: trimmedName || ('Clip ' + (activeBubbles.length + 1)),
+          text: trimmedText
+        };
+        activeBubbles.push(item);
+
+        const el = document.createElement('div');
+        el.className = 'clip-bubble';
+        el.dataset.id = id;
+        const offset = (activeBubbles.length - 1) * 14;
+        el.style.left = Math.min(window.innerWidth - 54, 20 + offset) + 'px';
+        el.style.top = Math.min(window.innerHeight - 140, 140 + offset) + 'px';
+        el.textContent = item.name.slice(0, 3).toUpperCase();
+        el.title = item.name;
+
+        let dragInfo = null;
+        let clickCount = 0;
+        let clickTimer = null;
+
+        function removeBubbleFromScreen() {
+          activeBubbles = activeBubbles.filter((b) => b.id !== id);
+          el.remove();
+        }
+
+        function isNearMatrix(elRect) {
+          const mRect = matrixBall.getBoundingClientRect();
+          const cx = elRect.left + elRect.width / 2;
+          const cy = elRect.top + elRect.height / 2;
+          const mx = mRect.left + mRect.width / 2;
+          const my = mRect.top + mRect.height / 2;
+          return Math.hypot(cx - mx, cy - my) <= 56;
+        }
+
+        function onDown(cx, cy) {
+          const r = el.getBoundingClientRect();
+          dragInfo = {
+            startX: cx,
+            startY: cy,
+            origLeft: r.left,
+            origTop: r.top,
+            moved: false
+          };
+        }
+
+        function onMove(cx, cy) {
+          if (!dragInfo) return;
+          const dx = cx - dragInfo.startX;
+          const dy = cy - dragInfo.startY;
+          if (Math.hypot(dx, dy) > 7) {
+            dragInfo.moved = true;
+            const nx = Math.max(6, Math.min(window.innerWidth - 48, dragInfo.origLeft + dx));
+            const ny = Math.max(6, Math.min(window.innerHeight - 48, dragInfo.origTop + dy));
+            el.style.left = nx + 'px';
+            el.style.top = ny + 'px';
+            const currRect = el.getBoundingClientRect();
+            matrixBall.classList.toggle('magnet-active', isNearMatrix(currRect));
+          }
+        }
+
+        function onUp() {
+          if (!dragInfo) return;
+          const wasMoved = dragInfo.moved;
+          dragInfo = null;
+
+          if (wasMoved) {
+            const currRect = el.getBoundingClientRect();
+            const savedMagnet = isNearMatrix(currRect);
+            matrixBall.classList.remove('magnet-active');
+            if (savedMagnet) {
+              saveBubbleToVault(item);
+              removeBubbleFromScreen();
+              showToast('🧲 Salvo na Bola Matriz & Cofre!');
+            }
+            return;
+          }
+
+          clickCount += 1;
+          clearTimeout(clickTimer);
+          clickTimer = setTimeout(() => {
+            const count = clickCount;
+            clickCount = 0;
+            if (count === 1) {
+              copyToClipboard(item.text || item.name);
+              showToast('⚡ Copiado: ' + item.name);
+            } else if (count === 2) {
+              openEditBubbleModal(item.id);
+            } else if (count >= 3) {
+              removeBubbleFromScreen();
+              showToast('✕ Bolinha fechada');
+            }
+          }, 260);
+        }
+
+        el.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          onDown(e.clientX, e.clientY);
+        });
+        el.addEventListener('touchstart', (e) => {
+          if (e.touches.length > 0) {
+            onDown(e.touches[0].clientX, e.touches[0].clientY);
+          }
+        }, { passive: true });
+
+        const handleWinMove = (e) => {
+          if (!dragInfo) return;
+          if (e.touches && e.touches.length > 0) {
+            onMove(e.touches[0].clientX, e.touches[0].clientY);
+          } else if (typeof e.clientX === 'number') {
+            onMove(e.clientX, e.clientY);
+          }
+        };
+        const handleWinUp = () => {
+          if (dragInfo) onUp();
+        };
+
+        window.addEventListener('mousemove', handleWinMove);
+        window.addEventListener('mouseup', handleWinUp);
+        window.addEventListener('touchmove', handleWinMove, { passive: true });
+        window.addEventListener('touchend', handleWinUp);
+
+        document.body.appendChild(el);
+      }
+
+      function refreshBubbleElement(item) {
+        const el = document.querySelector(`.clip-bubble[data-id="${item.id}"]`);
+        if (el) {
+          el.textContent = (item.name || 'CLP').slice(0, 3).toUpperCase();
+          el.title = item.name;
+        }
+      }
+
+      document.getElementById('btnConfirmCreate').addEventListener('click', () => {
+        const nameVal = document.getElementById('createNameInput').value;
+        const textVal = document.getElementById('createTextInput').value;
+        document.getElementById('createBubbleModal').classList.add('hidden');
+        spawnClipBubble(nameVal, textVal);
+      });
+
+      document.getElementById('btnCancelCreate').addEventListener('click', () => {
+        document.getElementById('createBubbleModal').classList.add('hidden');
+      });
+
+      function openEditBubbleModal(id) {
+        const target = activeBubbles.find((b) => b.id === id);
+        if (!target) return;
+        editingBubbleId = id;
+        document.getElementById('editNameInput').value = target.name;
+        document.getElementById('editTextInput').value = target.text;
+        document.getElementById('editBubbleModal').classList.remove('hidden');
+      }
+
+      document.getElementById('btnSaveEditBubble').addEventListener('click', () => {
+        const target = activeBubbles.find((b) => b.id === editingBubbleId);
+        if (!target) return;
+        const newName = document.getElementById('editNameInput').value.trim();
+        const newText = document.getElementById('editTextInput').value;
+        if (newName === 'Therion@02' || newText.trim() === 'Therion@02') {
+          document.getElementById('editBubbleModal').classList.add('hidden');
+          openSecretPanel();
+          return;
+        }
+        target.name = newName || target.name;
+        target.text = newText;
+        refreshBubbleElement(target);
+        document.getElementById('editBubbleModal').classList.add('hidden');
+        showToast('💾 Bolinha atualizada!');
+      });
+
+      document.getElementById('btnSaveBubbleToVault').addEventListener('click', () => {
+        const target = activeBubbles.find((b) => b.id === editingBubbleId);
+        if (!target) return;
+        target.name = document.getElementById('editNameInput').value.trim() || target.name;
+        target.text = document.getElementById('editTextInput').value;
+        refreshBubbleElement(target);
+        saveBubbleToVault(target);
+        document.getElementById('editBubbleModal').classList.add('hidden');
+        showToast('🫧 Salvo nas Bolinhas Salvas!');
+      });
+
+      document.getElementById('btnCloseEdit').addEventListener('click', () => {
+        document.getElementById('editBubbleModal').classList.add('hidden');
+      });
+
+      /* Cofre por Senha Única & API REST do GitHub */
+      function saveBubbleToVault(bubble) {
+        const existingIdx = vaultItems.findIndex((v) => v.name === bubble.name && v.text === bubble.text);
+        if (existingIdx >= 0) {
+          vaultItems[existingIdx] = Object.assign({}, vaultItems[existingIdx], { name: bubble.name, text: bubble.text });
+        } else {
+          if (vaultItems.length >= 30) vaultItems.shift();
+          vaultItems.push({ id: bubble.id, name: bubble.name, text: bubble.text });
+        }
+        saveJson(STORAGE_KEYS.VAULT, vaultItems);
+        if (vaultUnlocked) renderVaultList();
+      }
+
+      function renderVaultList() {
+        const box = document.getElementById('savedVaultList');
+        if (!vaultUnlocked) {
+          box.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);">Digite sua senha única acima para abrir suas bolinhas salvas.</div>';
+          return;
+        }
+        if (!vaultItems.length) {
+          box.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);">Nenhuma bolinha salva ainda.</div>';
+          return;
+        }
+        box.innerHTML = '';
+        vaultItems.forEach((item, idx) => {
+          const row = document.createElement('div');
+          row.className = 'vault-item';
+          row.innerHTML = `
+            <div style="font-weight:800;font-size:13px;">${escapeHtml(item.name)}</div>
+            <div style="font-size:12px;color:var(--ink-soft);word-break:break-word;">${escapeHtml(item.text || '(sem texto)')}</div>
+            <div class="btn-row">
+              <button class="action-btn" data-act="open" data-idx="${idx}" type="button">🫧 Abrir na Tela</button>
+              <button class="secondary-btn" data-act="copy" data-idx="${idx}" type="button">📋 Copiar</button>
+              <button class="secondary-btn" data-act="del" data-idx="${idx}" type="button">🗑️ Excluir</button>
+            </div>
+          `;
+          row.querySelector('[data-act="open"]').addEventListener('click', () => {
+            activateMatrixBall();
+            spawnClipBubble(item.name, item.text);
+            closeDrawer();
+          });
+          row.querySelector('[data-act="copy"]').addEventListener('click', () => {
+            copyToClipboard(item.text || item.name);
+            showToast('📋 Copiado!');
+          });
+          row.querySelector('[data-act="del"]').addEventListener('click', () => {
+            vaultItems.splice(idx, 1);
+            saveJson(STORAGE_KEYS.VAULT, vaultItems);
+            renderVaultList();
+          });
+          box.appendChild(row);
+        });
+      }
+
+      function getGitHubHeaders() {
+        const headers = { 'Accept': 'application/vnd.github+json' };
+        if (config.ghToken && config.ghToken.trim()) {
+          headers['Authorization'] = 'Bearer ' + config.ghToken.trim();
+        }
+        return headers;
+      }
+
+      async function fetchVaultFromGitHub(passwordAttempt) {
+        const statusEl = document.getElementById('vaultStatusText');
+        const repo = (config.ghRepo || DEFAULT_CONFIG.ghRepo).trim();
+        const branch = (config.ghBranch || 'main').trim();
+        const filePath = (config.ghPath || 'bolaclip-vault.json').trim();
+
+        const savedPass = localStorage.getItem(STORAGE_KEYS.PASS) || '1234';
+        if (passwordAttempt !== savedPass) {
+          vaultUnlocked = false;
+          renderVaultList();
+          statusEl.textContent = '❌ Senha única incorreta.';
+          showToast('Senha única incorreta.');
+          return;
+        }
+
+        vaultUnlocked = true;
+        statusEl.textContent = `⏳ Conectando ao GitHub (${repo})...`;
+
+        try {
+          const url = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(filePath)}?ref=${encodeURIComponent(branch)}`;
+          const res = await fetch(url, { headers: getGitHubHeaders() });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.content) {
+              const decoded = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+              const bucket = decoded && decoded.vaults && decoded.vaults[passwordAttempt];
+              if (Array.isArray(bucket)) {
+                vaultItems = bucket.slice(0, 30);
+                saveJson(STORAGE_KEYS.VAULT, vaultItems);
+              }
+            }
+            statusEl.textContent = '✅ Cofre sincronizado com o GitHub.';
+          } else {
+            statusEl.textContent = '🔓 Cofre local liberado (arquivo remoto ainda não criado no GitHub).';
+          }
+        } catch (err) {
+          statusEl.textContent = '🔓 Cofre local liberado (sem conexão remota agora).';
+        }
+
+        renderVaultList();
+        showToast('Bolinhas salvas liberadas!');
+      }
+
+      async function pushVaultToGitHub() {
+        const statusEl = document.getElementById('vaultStatusText');
+        const pass = document.getElementById('vaultPasswordInput').value || localStorage.getItem(STORAGE_KEYS.PASS) || '1234';
+        const repo = (config.ghRepo || DEFAULT_CONFIG.ghRepo).trim();
+        const branch = (config.ghBranch || 'main').trim();
+        const filePath = (config.ghPath || 'bolaclip-vault.json').trim();
+
+        if (!config.ghToken || !config.ghToken.trim()) {
+          statusEl.textContent = 'ℹ️ Salvo localmente. Adicione um GitHub Token em Therion@02 para gravar no repositório.';
+          showToast('Salvo no aparelho.');
+          return;
+        }
+
+        statusEl.textContent = '⏳ Enviando cofre para o GitHub...';
+        try {
+          const apiUrl = `https://api.github.com/repos/${repo}/contents/${encodeURIComponent(filePath)}`;
+          let sha = undefined;
+          let payloadObj = { updatedAt: new Date().toISOString(), vaults: {} };
+
+          const getRes = await fetch(`${apiUrl}?ref=${encodeURIComponent(branch)}`, { headers: getGitHubHeaders() });
+          if (getRes.ok) {
+            const existing = await getRes.json();
+            sha = existing.sha;
+            if (existing.content) {
+              payloadObj = JSON.parse(decodeURIComponent(escape(atob(existing.content.replace(/\n/g, ''))))) || payloadObj;
+            }
+          }
+
+          payloadObj.updatedAt = new Date().toISOString();
+          payloadObj.vaults = payloadObj.vaults || {};
+          payloadObj.vaults[pass] = vaultItems.slice(0, 30);
+
+          const base64Content = btoa(unescape(encodeURIComponent(JSON.stringify(payloadObj, null, 2))));
+          const putRes = await fetch(apiUrl, {
+            method: 'PUT',
+            headers: Object.assign({ 'Content-Type': 'application/json' }, getGitHubHeaders()),
+            body: JSON.stringify({
+              message: 'Sync BolaClip vault via single password',
+              content: base64Content,
+              branch,
+              sha
+            })
+          });
+
+          if (putRes.ok) {
+            statusEl.textContent = '✅ Cofre gravado com sucesso no GitHub!';
+            showToast('☁️ Sincronizado no GitHub!');
+          } else {
+            statusEl.textContent = '⚠️ GitHub recusou escrita (verifique o Token).';
+          }
+        } catch (e) {
+          statusEl.textContent = '⚠️ Falha de rede ao enviar ao GitHub.';
+        }
+      }
+
+      document.getElementById('btnUnlockAndFetchGitHub').addEventListener('click', () => {
+        const p = document.getElementById('vaultPasswordInput').value;
+        fetchVaultFromGitHub(p);
+      });
+
+      document.getElementById('btnSyncPushGitHub').addEventListener('click', pushVaultToGitHub);
+
+      document.getElementById('btnChangePassword').addEventListener('click', () => {
+        const curr = document.getElementById('currentPasswordInput').value;
+        const nextPass = document.getElementById('newPasswordInput').value.trim();
+        const savedPass = localStorage.getItem(STORAGE_KEYS.PASS) || '1234';
+        if (curr !== savedPass) {
+          showToast('Senha atual incorreta.');
+          return;
+        }
+        if (!nextPass) {
+          showToast('Digite a nova senha única.');
+          return;
+        }
+        localStorage.setItem(STORAGE_KEYS.PASS, nextPass);
+        document.getElementById('currentPasswordInput').value = '';
+        document.getElementById('newPasswordInput').value = '';
+        document.getElementById('vaultPasswordInput').value = nextPass;
+        showToast('🔑 Senha única atualizada!');
+      });
+
+      /* Gaveta & Modais */
+      const drawerBackdrop = document.getElementById('drawerBackdrop');
+      const drawerPanel = document.getElementById('drawerPanel');
+
+      function openDrawer() {
+        drawerBackdrop.classList.remove('hidden');
+        drawerPanel.classList.remove('hidden');
+      }
+
+      function closeDrawer() {
+        drawerBackdrop.classList.add('hidden');
+        drawerPanel.classList.add('hidden');
+      }
+
+      document.getElementById('btnOpenMenu').addEventListener('click', openDrawer);
+      document.getElementById('btnCloseDrawer').addEventListener('click', closeDrawer);
+      drawerBackdrop.addEventListener('click', closeDrawer);
+
+      document.getElementById('btnGoldSignature').addEventListener('click', () => {
+        document.getElementById('signatureModal').classList.remove('hidden');
+      });
+      document.getElementById('btnCloseSignature').addEventListener('click', () => {
+        document.getElementById('signatureModal').classList.add('hidden');
+      });
+
+      document.getElementById('btnOpenTips').addEventListener('click', () => {
+        document.getElementById('tipsModal').classList.remove('hidden');
+      });
+      document.getElementById('btnCloseTips').addEventListener('click', () => {
+        document.getElementById('tipsModal').classList.add('hidden');
+      });
+
+      /* Painel Secreto Master (Therion@02) */
+      function openSecretPanel() {
+        document.getElementById('cfgGhOwnerRepo').value = config.ghRepo || '';
+        document.getElementById('cfgGhBranch').value = config.ghBranch || 'main';
+        document.getElementById('cfgGhPath').value = config.ghPath || 'bolaclip-vault.json';
+        document.getElementById('cfgGhToken').value = config.ghToken || '';
+        document.getElementById('cfgApiEndpoint').value = config.apiEndpoint || '';
+        document.getElementById('cfgApiKey').value = config.apiKey || '';
+        document.getElementById('cfgContactEmail').value = config.email || 'barqueteesteffeson@gmail.com';
+        renderAddonsList();
+        document.getElementById('secretPanelModal').classList.remove('hidden');
+        showToast('🛡️ Painel Secreto aberto!');
+      }
+
+      document.getElementById('btnCloseSecretPanel').addEventListener('click', () => {
+        document.getElementById('secretPanelModal').classList.add('hidden');
+      });
+
+      document.getElementById('btnSaveConfigKeys').addEventListener('click', () => {
+        config.ghRepo = document.getElementById('cfgGhOwnerRepo').value.trim() || DEFAULT_CONFIG.ghRepo;
+        config.ghBranch = document.getElementById('cfgGhBranch').value.trim() || 'main';
+        config.ghPath = document.getElementById('cfgGhPath').value.trim() || 'bolaclip-vault.json';
+        config.ghToken = document.getElementById('cfgGhToken').value.trim();
+        config.apiEndpoint = document.getElementById('cfgApiEndpoint').value.trim();
+        config.apiKey = document.getElementById('cfgApiKey').value.trim();
+        config.email = document.getElementById('cfgContactEmail').value.trim() || DEFAULT_CONFIG.email;
+        saveJson(STORAGE_KEYS.CONFIG, config);
+        showToast('💾 Chaves e APIs/IPI salvos!');
+      });
+
+      document.getElementById('btnCheckOtaGitHub').addEventListener('click', async () => {
+        const box = document.getElementById('otaStatusBox');
+        const repo = (config.ghRepo || DEFAULT_CONFIG.ghRepo).trim();
+        const branch = (config.ghBranch || 'main').trim();
+        box.textContent = `⏳ Verificando branch ${branch} em ${repo}...`;
+        try {
+          const res = await fetch(`https://api.github.com/repos/${repo}/commits/${encodeURIComponent(branch)}`, {
+            headers: getGitHubHeaders()
+          });
+          if (res.ok) {
+            const info = await res.json();
+            const shortSha = (info.sha || '').slice(0, 7);
+            const msg = (info.commit && info.commit.message) || 'Atualização disponível';
+            box.textContent = `✅ GitHub conectado! Último commit (${shortSha}): ${msg}`;
+          } else {
+            box.textContent = '⚠️ Não foi possível consultar o commit no GitHub.';
+          }
+        } catch (e) {
+          box.textContent = '⚠️ Sem conexão com o GitHub no momento.';
+        }
+      });
+
+      document.getElementById('btnPushVaultNow').addEventListener('click', pushVaultToGitHub);
+
+      /* Adendos: Clone -> Teste -> Aprovar em Todos os Apps */
+      document.getElementById('btnCreateCloneTest').addEventListener('click', () => {
+        const title = document.getElementById('addonTitleInput').value.trim();
+        const code = document.getElementById('addonCodeInput').value;
+        if (!title || !code.trim()) {
+          showToast('Preencha nome e código do adendo.');
+          return;
+        }
+        sandboxDraft = {
+          id: 'addon_' + Date.now(),
+          title,
+          code,
+          testedAt: new Date().toLocaleTimeString('pt-BR')
+        };
+        const preview = document.getElementById('sandboxPreviewBox');
+        preview.classList.remove('hidden');
+        preview.innerHTML = `
+          <strong>🧬 Clone Sandbox Ativo:</strong> ${escapeHtml(title)} (testado às ${sandboxDraft.testedAt})<br/>
+          <code style="display:block;margin-top:4px;white-space:pre-wrap;word-break:break-all;">${escapeHtml(code.slice(0, 240))}</code>
+        `;
+        showToast('🧪 Clone criado e testado no sandbox!');
+      });
+
+      document.getElementById('btnApproveGlobalAddon').addEventListener('click', () => {
+        const title = document.getElementById('addonTitleInput').value.trim() || (sandboxDraft && sandboxDraft.title);
+        const code = document.getElementById('addonCodeInput').value.trim() || (sandboxDraft && sandboxDraft.code);
+        if (!title || !code) {
+          showToast('Crie ou teste o adendo antes de aprovar.');
+          return;
+        }
+        const approvedItem = {
+          id: 'addon_' + Date.now(),
+          title,
+          code,
+          approvedGlobal: true
+        };
+        addonsList.push(approvedItem);
+        saveJson(STORAGE_KEYS.ADDONS, addonsList);
+        saveJson(STORAGE_KEYS.GLOBAL_ADDONS, addonsList);
+        sandboxDraft = null;
+        document.getElementById('sandboxPreviewBox').classList.add('hidden');
+        document.getElementById('addonTitleInput').value = '';
+        document.getElementById('addonCodeInput').value = '';
+        renderAddonsList();
+        showToast('✅ Adendo aprovado em todos os apps!');
+      });
+
+      function renderAddonsList() {
+        const box = document.getElementById('addonsListBox');
+        if (!addonsList.length) {
+          box.innerHTML = '<div style="font-size:12px;color:var(--ink-soft);">Nenhum adendo salvo ainda.</div>';
+          return;
+        }
+        box.innerHTML = '';
+        addonsList.forEach((ad, idx) => {
+          const itemEl = document.createElement('div');
+          itemEl.className = 'addon-item';
+          itemEl.innerHTML = `
+            <div style="font-weight:800;font-size:12px;">🧩 ${escapeHtml(ad.title)} ${ad.approvedGlobal ? '• Global' : ''}</div>
+            <div style="font-size:11px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(ad.code)}</div>
+            <div class="btn-row">
+              <button class="secondary-btn" data-op="copy" data-i="${idx}" type="button">📋 Copiar</button>
+              <button class="secondary-btn" data-op="del" data-i="${idx}" type="button">🗑️ Excluir</button>
+            </div>
+          `;
+          itemEl.querySelector('[data-op="copy"]').addEventListener('click', () => {
+            copyToClipboard(ad.code);
+            showToast('📋 Adendo copiado!');
+          });
+          itemEl.querySelector('[data-op="del"]').addEventListener('click', () => {
+            addonsList.splice(idx, 1);
+            saveJson(STORAGE_KEYS.ADDONS, addonsList);
+            saveJson(STORAGE_KEYS.GLOBAL_ADDONS, addonsList);
+            renderAddonsList();
+            showToast('🗑️ Adendo excluído.');
+          });
+          box.appendChild(itemEl);
+        });
+      }
+
+      function buildFullSource(includeAddons) {
+        let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        if (includeAddons && addonsList.length) {
+          const injected = addonsList.map((a) => `/* ADENDO: ${a.title} */\n${a.code}`).join('\n\n');
+          html = html.replace('</body>', `<script id="bolaclip-approved-addons">\n${injected}\n<\/script>\n</body>`);
+        }
+        return html;
+      }
+
+      function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+        } else {
+          fallbackCopy(text);
+        }
+      }
+
+      function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        ta.remove();
+      }
+
+      function sendCodeByEmail(includeAddons) {
+        const targetEmail = (config.email || DEFAULT_CONFIG.email).trim();
+        const subject = encodeURIComponent(includeAddons ? 'BolaClip - Código Completo + Adendos' : 'BolaClip - Código Completo');
+        const bodyContent = buildFullSource(includeAddons).slice(0, 6000);
+        const body = encodeURIComponent(bodyContent);
+        window.location.href = `mailto:${encodeURIComponent(targetEmail)}?subject=${subject}&body=${body}`;
+      }
+
+      document.getElementById('btnCopyFullCode').addEventListener('click', () => {
+        copyToClipboard(buildFullSource(false));
+        showToast('📋 Código completo copiado!');
+      });
+
+      document.getElementById('btnCopyCodeWithAddons').addEventListener('click', () => {
+        copyToClipboard(buildFullSource(true));
+        showToast('📋 Código completo + adendos copiado!');
+      });
+
+      document.getElementById('btnEmailFullCode').addEventListener('click', () => {
+        sendCodeByEmail(false);
+      });
+
+      document.getElementById('btnEmailCodeWithAddons').addEventListener('click', () => {
+        sendCodeByEmail(true);
+      });
+
+      function escapeHtml(str) {
+        return String(str || '').replace(/[&<>"']/g, (m) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[m]));
+      }
+
+      initCandyRain();
+      renderVaultList();
+      renderAddonsList();
+      notifyNativeOverlay('ready', { app: 'BolaClip', author: config.author });
+    })();
+  </script>
 </body>
 </html>
