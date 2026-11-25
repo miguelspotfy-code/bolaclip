@@ -1,5 +1,6 @@
 package com.esteffeson.bolaclip;
 
+import android.app.KeyguardManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -13,18 +14,21 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.concurrent.Executor;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends FragmentActivity {
 
     private static final int REQUEST_OVERLAY_PERMISSION = 1001;
+    private static final int REQUEST_DEVICE_CREDENTIAL_LEGACY = 1002;
+
     private WebView webView;
     private boolean isAuthenticated = false;
+    private boolean promptShowing = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,30 +52,57 @@ public class MainActivity extends AppCompatActivity {
         });
 
         setContentView(webView);
-        authenticateUser();
+        requestDeviceUnlock();
     }
 
-    private void authenticateUser() {
+    private void requestDeviceUnlock() {
+        if (isAuthenticated || promptShowing) return;
+
         BiometricManager biometricManager = BiometricManager.from(this);
-        int authenticators = BiometricManager.Authenticators.BIOMETRIC_STRONG
+        int credentialAuth = BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+        int combinedAuth = BiometricManager.Authenticators.BIOMETRIC_STRONG
                 | BiometricManager.Authenticators.BIOMETRIC_WEAK
                 | BiometricManager.Authenticators.DEVICE_CREDENTIAL;
 
-        int canAuthenticate = biometricManager.canAuthenticate(authenticators);
-        if (canAuthenticate != BiometricManager.BIOMETRIC_SUCCESS) {
-            isAuthenticated = true;
-            unlockApp();
+        int canAuth = biometricManager.canAuthenticate(combinedAuth);
+        if (canAuth == BiometricManager.BIOMETRIC_SUCCESS) {
+            showBiometricPrompt(combinedAuth);
             return;
         }
 
+        int canCredential = biometricManager.canAuthenticate(credentialAuth);
+        if (canCredential == BiometricManager.BIOMETRIC_SUCCESS) {
+            showBiometricPrompt(credentialAuth);
+            return;
+        }
+
+        KeyguardManager km = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+        if (km != null && km.isKeyguardSecure()) {
+            Intent intent = km.createConfirmDeviceCredentialIntent("BolaClip", "Digite a senha do celular para abrir");
+            if (intent != null) {
+                promptShowing = true;
+                startActivityForResult(intent, REQUEST_DEVICE_CREDENTIAL_LEGACY);
+                return;
+            }
+        }
+
+        Toast.makeText(this, "Configure uma senha ou biometria no celular para usar o bloqueio", Toast.LENGTH_LONG).show();
+        isAuthenticated = true;
+        unlockApp();
+    }
+
+    private void showBiometricPrompt(int allowedAuthenticators) {
+        promptShowing = true;
         Executor executor = ContextCompat.getMainExecutor(this);
-        BiometricPrompt biometricPrompt = new BiometricPrompt(
+
+        BiometricPrompt prompt = new BiometricPrompt(
                 this,
                 executor,
                 new BiometricPrompt.AuthenticationCallback() {
                     @Override
                     public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                         super.onAuthenticationSucceeded(result);
+                        promptShowing = false;
                         isAuthenticated = true;
                         unlockApp();
                     }
@@ -79,25 +110,26 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
                         super.onAuthenticationError(errorCode, errString);
-                        Toast.makeText(MainActivity.this, "Autenticação necessária: " + errString, Toast.LENGTH_SHORT).show();
+                        promptShowing = false;
+                        Toast.makeText(MainActivity.this, "Senha necessária: " + errString, Toast.LENGTH_SHORT).show();
                         finishAffinity();
                     }
 
                     @Override
                     public void onAuthenticationFailed() {
                         super.onAuthenticationFailed();
-                        Toast.makeText(MainActivity.this, "Tente novamente", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Senha ou biometria incorreta", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
 
-        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Desbloquear BolaClip")
-                .setSubtitle("Use sua biometria ou senha do aparelho")
-                .setAllowedAuthenticators(authenticators)
+        BiometricPrompt.PromptInfo info = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("BolaClip")
+                .setSubtitle("Confirme a biometria ou senha do celular")
+                .setAllowedAuthenticators(allowedAuthenticators)
                 .build();
 
-        biometricPrompt.authenticate(promptInfo);
+        prompt.authenticate(info);
     }
 
     private void unlockApp() {
@@ -132,11 +164,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_OVERLAY_PERMISSION && isAuthenticated) {
+        if (requestCode == REQUEST_DEVICE_CREDENTIAL_LEGACY) {
+            promptShowing = false;
+            if (resultCode == RESULT_OK) {
+                isAuthenticated = true;
+                unlockApp();
+            } else {
+                finishAffinity();
+            }
+        } else if (requestCode == REQUEST_OVERLAY_PERMISSION && isAuthenticated) {
             if (Settings.canDrawOverlays(this)) {
                 ensureOverlayPermissionAndStartService();
             } else {
-                Toast.makeText(this, "Permissão de sobreposição necessária para manter as bolinhas", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Ative 'Aparecer sobre outros apps' para o BolaClip funcionar", Toast.LENGTH_LONG).show();
             }
         }
     }

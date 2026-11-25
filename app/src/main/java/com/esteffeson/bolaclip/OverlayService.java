@@ -69,7 +69,7 @@ public class OverlayService extends Service {
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("BolaClip")
                 .setContentText("Bolinhas ativas sobre a tela")
-                .setSmallIcon(android.R.drawable.ic_menu_add)
+                .setSmallIcon(R.drawable.ic_bolaclip_launcher)
                 .setOngoing(true)
                 .build();
 

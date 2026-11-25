@@ -8,9 +8,11 @@
 
     <application
         android:allowBackup="true"
+        android:icon="@drawable/ic_bolaclip_launcher"
+        android:roundIcon="@drawable/ic_bolaclip_launcher"
         android:label="BolaClip"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        android:theme="@style/Theme.BolaClip">
 
         <service
             android:name=".OverlayService"
@@ -25,6 +27,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:configChanges="orientation|screenSize|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
