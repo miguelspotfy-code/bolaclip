@@ -130,7 +130,23 @@ h1, h2, h3, .brand-font {
   z-index: 55;
   touch-action: none;
 }
-/* Correcao de layout para WebView */
+/* Correcao de layout e componentes para WebView */
+.w-full { width: 100%; display: block; }
+.py-2\.5 { padding-top: 10px; padding-bottom: 10px; }
+.py-3 { padding-top: 12px; padding-bottom: 12px; }
+.px-4 { padding-left: 16px; padding-right: 16px; }
+.pt-1 { padding-top: 4px; }
+.space-y-2 > * + * { margin-top: 8px; }
+.rounded-xl { border-radius: 12px; }
+.font-bold { font-weight: 700; }
+.text-sm { font-size: 14px; }
+.text-white { color: #ffffff; }
+.bg-emerald-500 { background-color: #10b981; border: none; cursor: pointer; }
+.bg-pink-500 { background-color: #ec4899; border: none; cursor: pointer; }
+.bg-amber-300 { background-color: #fcd34d; border: none; cursor: pointer; }
+.text-amber-950 { color: #451a03; }
+.bg-white { background-color: #ffffff; }
+.border-pink-200 { border: 1.5px solid #fbcfe8; }
 *, *::before, *::after { box-sizing: border-box; max-width: 100%; }
 body { margin: 0; padding: 0; width: 100%; overflow-x: hidden; }
 .app-shell { width: 100%; max-width: 480px; margin: 0 auto; padding: 14px; }
